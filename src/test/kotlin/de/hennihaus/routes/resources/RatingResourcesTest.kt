@@ -35,12 +35,14 @@ class RatingResourcesTest {
             classUnderTest.validate { testOperation(score = it) }
 
             verify(exactly = 1) {
-                testOperation(score = withArg {
-                    it.shouldBeEqualToIgnoringFields(
-                        other = getMinValidRequestScore(),
-                        property = Ratings.Score::parent
-                    )
-                })
+                testOperation(
+                    score = withArg {
+                        it.shouldBeEqualToIgnoringFields(
+                            other = getMinValidRequestScore(),
+                            property = Ratings.Score::parent
+                        )
+                    }
+                )
             }
         }
 
@@ -160,6 +162,8 @@ class RatingResourcesTest {
     }
 
     companion object {
-        fun testOperation(score: Ratings.Score) { println(score) }
+        fun testOperation(score: Ratings.Score) {
+            println(score)
+        }
     }
 }
