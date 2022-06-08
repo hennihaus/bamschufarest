@@ -2,7 +2,6 @@ package de.hennihaus.plugins
 
 import de.hennihaus.models.generated.Error
 import de.hennihaus.plugins.ErrorMessage.INTERNAL_SERVER_ERROR_MESSAGE
-import de.hennihaus.plugins.ErrorMessage.MISSING_PROPERTY_MESSAGE
 import de.hennihaus.plugins.ErrorMessage.NOT_FOUND_MESSAGE
 import de.hennihaus.utils.ValidationException
 import de.hennihaus.utils.withoutNanos
