@@ -1,6 +1,7 @@
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import kotlinx.kover.api.CoverageEngine
 import kotlinx.kover.api.VerificationValueType
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
     application
@@ -11,6 +12,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("io.gitlab.arturbosch.detekt")
     id("com.github.johnrengelman.shadow")
+    id("org.openapi.generator")
 }
 
 group = "de.hennihaus"
@@ -28,7 +30,10 @@ tasks.shadowJar {
 
 sourceSets {
     main {
-        java.srcDirs("build/generated/ksp/main/kotlin")
+        java.srcDirs(
+            "build/generated/ksp/main/kotlin",
+            "build/generated/openapi/main/kotlin",
+        )
     }
 }
 
@@ -100,6 +105,18 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
+val generateRatingModel by tasks.registering(GenerateTask::class) {
+    generatorName.set("kotlin")
+    outputDir.set("$buildDir/generated/openapi")
+    inputSpec.set("$projectDir/config/openapi/rating.yaml")
+    configFile.set("$projectDir/config/openapi/config.json")
+    globalProperties.set(mapOf("models" to "Error,Rating", "modelDocs" to "false", "apis" to "false"))
+    modelPackage.set("de.hennihaus.models.generated")
+    skipValidateSpec.set(false)
+    typeMappings.set(mapOf("string+date-time" to "KotlinxDateTime"))
+    importMappings.set(mapOf("KotlinxDateTime" to "kotlinx.datetime.LocalDateTime"))
+}
+
 ktlint {
     ignoreFailures.set(false)
     filter {
@@ -162,6 +179,10 @@ testing {
 
 val integrationTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
+}
+
+tasks.compileKotlin {
+    dependsOn(generateRatingModel)
 }
 
 tasks.check {

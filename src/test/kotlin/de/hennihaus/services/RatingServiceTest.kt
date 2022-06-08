@@ -1,7 +1,7 @@
 package de.hennihaus.services
 
-import de.hennihaus.models.Rating
 import de.hennihaus.models.RatingLevel
+import de.hennihaus.models.generated.Rating
 import io.kotest.matchers.ints.shouldBeInRange
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.longs.shouldBeLessThanOrEqual

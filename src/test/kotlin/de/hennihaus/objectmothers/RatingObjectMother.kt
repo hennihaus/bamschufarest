@@ -1,7 +1,7 @@
 package de.hennihaus.objectmothers
 
-import de.hennihaus.models.Rating
 import de.hennihaus.models.RatingLevel
+import de.hennihaus.models.generated.Rating
 
 object RatingObjectMother {
 

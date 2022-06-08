@@ -1,13 +1,13 @@
 package de.hennihaus.routes
 
-import de.hennihaus.models.Rating
-import de.hennihaus.objectmothers.ExceptionResponseObjectMother.getInternalServerExceptionResponse
-import de.hennihaus.objectmothers.ExceptionResponseObjectMother.getInvalidRequestExceptionResponse
-import de.hennihaus.objectmothers.ExceptionResponseObjectMother.getNotFoundExceptionResponse
+import de.hennihaus.models.generated.Error
+import de.hennihaus.models.generated.Rating
+import de.hennihaus.objectmothers.ErrorObjectMother.getInternalServerError
+import de.hennihaus.objectmothers.ErrorObjectMother.getInvalidRequestError
+import de.hennihaus.objectmothers.ErrorObjectMother.getNotFoundError
 import de.hennihaus.objectmothers.RatingObjectMother.getBestRating
 import de.hennihaus.objectmothers.ScoreObjectMother.getMinValidRequestScore
 import de.hennihaus.plugins.ErrorMessage
-import de.hennihaus.plugins.ExceptionResponse
 import de.hennihaus.services.RatingService
 import de.hennihaus.services.TrackingService
 import de.hennihaus.testutils.KtorTestBuilder.testApplicationWith
@@ -23,10 +23,12 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
 import io.mockk.mockk
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -42,6 +44,9 @@ class RatingRoutesTest {
 
     @BeforeEach
     fun init() = clearAllMocks()
+
+    @AfterEach
+    fun tearDown() = stopKoin()
 
     @Nested
     inner class GetRatingScore {
@@ -89,7 +94,7 @@ class RatingRoutesTest {
         }
 
         @Test
-        fun `should return 400 when request (password) was invalid`() = testApplicationWith(mockModule) {
+        fun `should return 400 and error when request (password) was invalid`() = testApplicationWith(mockModule) {
             val (
                 _,
                 socialSecurityNumber,
@@ -111,13 +116,13 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.BadRequest
-            response.body<ExceptionResponse>() shouldBe getInvalidRequestExceptionResponse()
+            response.body<Error>() shouldBe getInvalidRequestError()
             coVerify(exactly = 0) { ratingService.calculateScore(ratingLevel = any(), delayInMilliseconds = any()) }
             coVerify(exactly = 0) { trackingService.trackRequest(username = any(), password = any()) }
         }
 
         @Test
-        fun `should return 404 when NotFoundException is thrown`() = testApplicationWith(mockModule) {
+        fun `should return 404 and error when NotFoundException is thrown`() = testApplicationWith(mockModule) {
             val (
                 _,
                 socialSecurityNumber,
@@ -142,11 +147,11 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.NotFound
-            response.body<ExceptionResponse>() shouldBe getNotFoundExceptionResponse()
+            response.body<Error>() shouldBe getNotFoundError()
         }
 
         @Test
-        fun `should return 500 when IllegalStateException is thrown`() = testApplicationWith(mockModule) {
+        fun `should return 500 and error when IllegalStateException is thrown`() = testApplicationWith(mockModule) {
             val (
                 _,
                 socialSecurityNumber,
@@ -169,7 +174,7 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.InternalServerError
-            response.body<ExceptionResponse>() shouldBe getInternalServerExceptionResponse()
+            response.body<Error>() shouldBe getInternalServerError()
         }
     }
 }
