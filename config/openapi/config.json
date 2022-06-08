@@ -1,0 +1,10 @@
+{
+  "collectionType": "list",
+  "dateLibrary": "java8",
+  "enumPropertyNaming": "UPPERCASE",
+  "library": "multiplatform",
+  "modelMutable": false,
+  "requestDateConverter": "toString",
+  "serializableModel": false,
+  "sourceFolder": "main/kotlin"
+}

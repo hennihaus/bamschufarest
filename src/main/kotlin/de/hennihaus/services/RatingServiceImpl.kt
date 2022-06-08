@@ -1,7 +1,7 @@
 package de.hennihaus.services
 
-import de.hennihaus.models.Rating
 import de.hennihaus.models.RatingLevel
+import de.hennihaus.models.generated.Rating
 import kotlinx.coroutines.delay
 import org.koin.core.annotation.Single
 

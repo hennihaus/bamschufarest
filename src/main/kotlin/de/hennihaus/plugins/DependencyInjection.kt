@@ -32,3 +32,5 @@ fun <T> Application.getProperty(key: String): T = property(key) ?: throw Propert
 fun <T> Routing.getProperty(key: String): T = property(key) ?: throw PropertyNotFoundException(key = key)
 
 fun <T> Route.getProperty(key: String): T = property(key) ?: throw PropertyNotFoundException(key = key)
+
+class PropertyNotFoundException(key: String) : IllegalStateException("${ErrorMessage.MISSING_PROPERTY_MESSAGE} $key")
