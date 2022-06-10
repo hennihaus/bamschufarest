@@ -108,8 +108,8 @@ dependencies {
 val generateRatingModel by tasks.registering(GenerateTask::class) {
     generatorName.set("kotlin")
     outputDir.set("$buildDir/generated/openapi")
-    inputSpec.set("$projectDir/config/openapi/rating.yaml")
-    configFile.set("$projectDir/config/openapi/config.json")
+    inputSpec.set("$projectDir/docs/rating.yaml")
+    configFile.set("$projectDir/docs/config.json")
     globalProperties.set(mapOf("models" to "Error,Rating", "modelDocs" to "false", "apis" to "false"))
     modelPackage.set("de.hennihaus.models.generated")
     skipValidateSpec.set(false)
