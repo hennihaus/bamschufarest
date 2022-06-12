@@ -45,16 +45,16 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/getRating"
+            "$ref": "#/components/responses/200"
           },
           "400": {
-            "$ref": "#/components/responses/validationError"
+            "$ref": "#/components/responses/400"
           },
           "404": {
-            "$ref": "#/components/responses/groupNotFoundError"
+            "$ref": "#/components/responses/404"
           },
           "500": {
-            "$ref": "#/components/responses/internalServerError"
+            "$ref": "#/components/responses/500"
           }
         }
       }
@@ -121,7 +121,7 @@
       }
     },
     "responses": {
-      "getRating": {
+      "200": {
         "description": "Schufa-Score des Debitors",
         "content": {
           "application/json": {
@@ -135,7 +135,7 @@
           }
         }
       },
-      "validationError": {
+      "400": {
         "description": "Ungültige Parameter",
         "content": {
           "application/json": {
@@ -149,7 +149,7 @@
           }
         }
       },
-      "groupNotFoundError": {
+      "404": {
         "description": "Gruppe wurde nicht gefunden",
         "content": {
           "application/json": {
@@ -163,7 +163,7 @@
           }
         }
       },
-      "internalServerError": {
+      "500": {
         "description": "Interner Server Fehler",
         "content": {
           "application/json": {
