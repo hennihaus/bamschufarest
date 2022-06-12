@@ -169,6 +169,10 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "[kotlin.Exception: Internal server error]",
+              "dateTime": "2022-01-31T07:43:30"
             }
           }
         }

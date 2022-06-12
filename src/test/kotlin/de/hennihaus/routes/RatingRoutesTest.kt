@@ -174,7 +174,9 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.InternalServerError
-            response.body<Error>() shouldBe getInternalServerError()
+            response.body<Error>() shouldBe getInternalServerError(
+                message = "${IllegalStateException()}",
+            )
         }
     }
 }
