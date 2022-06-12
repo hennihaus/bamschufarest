@@ -29,7 +29,7 @@ object ErrorObjectMother {
     )
 
     fun getInternalServerError(
-        message: String = ErrorMessage.INTERNAL_SERVER_ERROR_MESSAGE,
+        message: String = "${IllegalStateException()}",
         dateTime: Instant = Clock.System.now()
     ) = Error(
         message = message,
