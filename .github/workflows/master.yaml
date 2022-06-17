@@ -23,6 +23,29 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
+#      - name: Sync master branch with integrationtest branch
+#        uses: tretuna/sync-branches@1.4.0
+#        with:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          FROM_BRANCH: ${GITHUB_REF##*/}
+#          TO_BRANCH: integrationtest
+#          CONTENT_COMPARISON: true
+#
+#      - name: Sync master branch with integrationtest branch
+#        uses: pascalgn/automerge-action@v0.15.3
+#        env:
+#          - GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          # default
+#          - MERGE_LABELS: automerge
+#          - MERGE_COMMIT_MESSAGE: pull-request-title
+#          - MERGE_FILTER_AUTHOR:
+#          - MERGE_FORKS: false
+#          # default
+#          - MERGE_RETRIES: 6
+#          - MERGE_RETRY_SLEEP: 60000
+#          - MERGE_DELETE_BRANCH: true
+#          - MERGE_ERROR_FAIL:
+
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         id: tag-version
@@ -45,3 +68,11 @@ jobs:
 
       - name: Push latest Docker Image
         run: docker push ${{ github.repository }}:latest
+
+      - name: Sync integrationtest branch with master branch
+        uses: wei/git-sync@v3
+        with:
+          source_repo: ${{ github.repository }}
+          source_branch: ${GITHUB_REF##*/}
+          destination_repo: ${{ github.repository }}
+          destination_branch: integrationtest
