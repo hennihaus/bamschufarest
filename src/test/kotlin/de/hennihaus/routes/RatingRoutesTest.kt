@@ -121,7 +121,7 @@ class RatingRoutesTest {
             response.body<Error>() should {
                 it.shouldBeEqualToIgnoringFields(
                     other = getInvalidRequestError(),
-                    property = Error::message,
+                    property = Error::dateTime,
                 )
                 it.dateTime.shouldBeEqualToIgnoringFields(
                     other = getInvalidRequestError().dateTime,
@@ -161,7 +161,7 @@ class RatingRoutesTest {
             response.body<Error>() should {
                 it.shouldBeEqualToIgnoringFields(
                     other = getNotFoundError(),
-                    property = Error::message,
+                    property = Error::dateTime,
                 )
                 it.dateTime.shouldBeEqualToIgnoringFields(
                     other = getNotFoundError().dateTime,
@@ -197,8 +197,8 @@ class RatingRoutesTest {
             response.body<Error>() should {
                 it.shouldBeEqualToIgnoringFields(
                     other = getNotFoundError(),
-                    property = Error::message,
-                    others = arrayOf(Error::dateTime),
+                    property = Error::dateTime,
+                    others = arrayOf(Error::message),
                 )
                 it.message shouldBe "${IllegalStateException()}"
                 it.dateTime.shouldBeEqualToIgnoringFields(
