@@ -17,9 +17,6 @@ jobs:
           java-version: '11'
           cache: 'gradle'
 
-      - name: Test repository
-        run: echo "${{ github.repository }}"
-
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
