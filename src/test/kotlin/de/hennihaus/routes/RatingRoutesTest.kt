@@ -2,7 +2,6 @@ package de.hennihaus.routes
 
 import de.hennihaus.models.generated.Error
 import de.hennihaus.models.generated.Rating
-import de.hennihaus.objectmothers.ErrorObjectMother.getInternalServerError
 import de.hennihaus.objectmothers.ErrorObjectMother.getInvalidRequestError
 import de.hennihaus.objectmothers.ErrorObjectMother.getNotFoundError
 import de.hennihaus.objectmothers.RatingObjectMother.getBestRating
@@ -13,6 +12,8 @@ import de.hennihaus.services.TrackingService
 import de.hennihaus.testutils.KtorTestBuilder.testApplicationWith
 import de.hennihaus.testutils.testClient
 import io.kotest.assertions.ktor.client.shouldHaveStatus
+import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -23,6 +24,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
 import io.mockk.mockk
+import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -116,7 +118,16 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.BadRequest
-            response.body<Error>() shouldBe getInvalidRequestError()
+            response.body<Error>() should {
+                it.shouldBeEqualToIgnoringFields(
+                    other = getInvalidRequestError(),
+                    property = Error::message,
+                )
+                it.dateTime.shouldBeEqualToIgnoringFields(
+                    other = getInvalidRequestError().dateTime,
+                    property = LocalDateTime::second,
+                )
+            }
             coVerify(exactly = 0) { ratingService.calculateScore(ratingLevel = any(), delayInMilliseconds = any()) }
             coVerify(exactly = 0) { trackingService.trackRequest(username = any(), password = any()) }
         }
@@ -147,7 +158,16 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.NotFound
-            response.body<Error>() shouldBe getNotFoundError()
+            response.body<Error>() should {
+                it.shouldBeEqualToIgnoringFields(
+                    other = getNotFoundError(),
+                    property = Error::message,
+                )
+                it.dateTime.shouldBeEqualToIgnoringFields(
+                    other = getNotFoundError().dateTime,
+                    property = LocalDateTime::second,
+                )
+            }
         }
 
         @Test
@@ -174,9 +194,18 @@ class RatingRoutesTest {
             )
 
             response shouldHaveStatus HttpStatusCode.InternalServerError
-            response.body<Error>() shouldBe getInternalServerError(
-                message = "${IllegalStateException()}",
-            )
+            response.body<Error>() should {
+                it.shouldBeEqualToIgnoringFields(
+                    other = getNotFoundError(),
+                    property = Error::message,
+                    others = arrayOf(Error::dateTime),
+                )
+                it.message shouldBe "${IllegalStateException()}"
+                it.dateTime.shouldBeEqualToIgnoringFields(
+                    other = getNotFoundError().dateTime,
+                    property = LocalDateTime::second,
+                )
+            }
         }
     }
 }
