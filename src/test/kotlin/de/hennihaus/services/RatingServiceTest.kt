@@ -16,13 +16,13 @@ class RatingServiceTest {
     private val classUnderTest = RatingServiceImpl()
 
     @Nested
-    inner class CalculateScore {
+    inner class CalculateRating {
         @Test
         fun `should return correct rating when ratingLevel = A and delayInMilliseconds = 0`() = runBlocking {
             val ratingLevel = "${RatingLevel.A}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -36,7 +36,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.A}".lowercase()
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -50,7 +50,7 @@ class RatingServiceTest {
             val ratingLevel = null
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -65,7 +65,7 @@ class RatingServiceTest {
             val delayInMilliseconds = null
 
             val time = measureTimeMillis {
-                classUnderTest.calculateScore(
+                classUnderTest.calculateRating(
                     ratingLevel = ratingLevel,
                     delayInMilliseconds = delayInMilliseconds,
                 )
@@ -80,7 +80,7 @@ class RatingServiceTest {
             val delayInMilliseconds = 250L
 
             val time = measureTimeMillis {
-                classUnderTest.calculateScore(
+                classUnderTest.calculateRating(
                     ratingLevel = ratingLevel,
                     delayInMilliseconds = delayInMilliseconds,
                 )
@@ -94,7 +94,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.B}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -108,7 +108,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.C}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -122,7 +122,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.D}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -136,7 +136,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.E}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -150,7 +150,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.F}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds
             )
@@ -164,7 +164,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.G}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -178,7 +178,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.H}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -192,7 +192,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.I}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -206,7 +206,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.J}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -220,7 +220,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.K}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -234,7 +234,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.L}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -248,7 +248,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.N}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -262,7 +262,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.O}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )
@@ -276,7 +276,7 @@ class RatingServiceTest {
             val ratingLevel = "${RatingLevel.P}"
             val delayInMilliseconds = 0L
 
-            val result: Rating = classUnderTest.calculateScore(
+            val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
                 delayInMilliseconds = delayInMilliseconds,
             )

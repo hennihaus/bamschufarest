@@ -5,7 +5,7 @@ import de.hennihaus.models.generated.Rating
 import de.hennihaus.objectmothers.ErrorObjectMother.getInvalidRequestError
 import de.hennihaus.objectmothers.ErrorObjectMother.getNotFoundError
 import de.hennihaus.objectmothers.RatingObjectMother.getBestRating
-import de.hennihaus.objectmothers.ScoreObjectMother.getMinValidRequestScore
+import de.hennihaus.objectmothers.RatingObjectMother.getMinValidRatingResource
 import de.hennihaus.plugins.ErrorMessage
 import de.hennihaus.services.RatingService
 import de.hennihaus.services.TrackingService
@@ -51,14 +51,14 @@ class RatingRoutesTest {
     fun tearDown() = stopKoin()
 
     @Nested
-    inner class GetRatingScore {
+    inner class GetRating {
 
         @BeforeEach
         fun init() {
             // default behavior
             coEvery { trackingService.trackRequest(username = any(), password = any()) } returns Unit
             coEvery {
-                ratingService.calculateScore(
+                ratingService.calculateRating(
                     ratingLevel = any(),
                     delayInMilliseconds = any(),
                 )
@@ -66,19 +66,18 @@ class RatingRoutesTest {
         }
 
         @Test
-        fun `should return 200 and a rating score`() = testApplicationWith(mockModule) {
+        fun `should return 200 and a rating`() = testApplicationWith(mockModule) {
             val (
-                _,
                 socialSecurityNumber,
                 ratingLevel,
                 delayInMilliseconds,
                 username,
-                password
-            ) = getMinValidRequestScore()
+                password,
+            ) = getMinValidRatingResource()
 
             val response = testClient.get(
                 urlString = """
-                    /ratings/score
+                    /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
                     &delayInMilliseconds=$delayInMilliseconds
@@ -90,7 +89,7 @@ class RatingRoutesTest {
             response shouldHaveStatus HttpStatusCode.OK
             response.body<Rating>() shouldBe getBestRating()
             coVerifySequence {
-                ratingService.calculateScore(ratingLevel = ratingLevel, delayInMilliseconds = delayInMilliseconds)
+                ratingService.calculateRating(ratingLevel = ratingLevel, delayInMilliseconds = delayInMilliseconds)
                 trackingService.trackRequest(username = username, password = password)
             }
         }
@@ -98,17 +97,16 @@ class RatingRoutesTest {
         @Test
         fun `should return 400 and error when request (password) was invalid`() = testApplicationWith(mockModule) {
             val (
-                _,
                 socialSecurityNumber,
                 ratingLevel,
                 delayInMilliseconds,
-                username
-            ) = getMinValidRequestScore()
+                username,
+            ) = getMinValidRatingResource()
             val password = ""
 
             val response = testClient.get(
                 urlString = """
-                    /ratings/score
+                    /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
                     &delayInMilliseconds=$delayInMilliseconds
@@ -128,27 +126,26 @@ class RatingRoutesTest {
                     property = LocalDateTime::second,
                 )
             }
-            coVerify(exactly = 0) { ratingService.calculateScore(ratingLevel = any(), delayInMilliseconds = any()) }
+            coVerify(exactly = 0) { ratingService.calculateRating(ratingLevel = any(), delayInMilliseconds = any()) }
             coVerify(exactly = 0) { trackingService.trackRequest(username = any(), password = any()) }
         }
 
         @Test
         fun `should return 404 and error when NotFoundException is thrown`() = testApplicationWith(mockModule) {
             val (
-                _,
                 socialSecurityNumber,
                 ratingLevel,
                 delayInMilliseconds,
                 username,
-                password
-            ) = getMinValidRequestScore()
+                password,
+            ) = getMinValidRatingResource()
             coEvery { trackingService.trackRequest(username = any(), password = any()) } throws NotFoundException(
                 message = ErrorMessage.NOT_FOUND_MESSAGE
             )
 
             val response = testClient.get(
                 urlString = """
-                    /ratings/score
+                    /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
                     &delayInMilliseconds=$delayInMilliseconds
@@ -173,18 +170,17 @@ class RatingRoutesTest {
         @Test
         fun `should return 500 and error when IllegalStateException is thrown`() = testApplicationWith(mockModule) {
             val (
-                _,
                 socialSecurityNumber,
                 ratingLevel,
                 delayInMilliseconds,
                 username,
                 password
-            ) = getMinValidRequestScore()
+            ) = getMinValidRatingResource()
             coEvery { trackingService.trackRequest(username = any(), password = any()) } throws IllegalStateException()
 
             val response = testClient.get(
                 urlString = """
-                    /ratings/score
+                    /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
                     &delayInMilliseconds=$delayInMilliseconds

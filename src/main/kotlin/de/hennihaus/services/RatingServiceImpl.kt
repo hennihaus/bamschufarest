@@ -8,7 +8,7 @@ import org.koin.core.annotation.Single
 @Single
 class RatingServiceImpl : RatingService {
 
-    override suspend fun calculateScore(ratingLevel: String?, delayInMilliseconds: Long?): Rating {
+    override suspend fun calculateRating(ratingLevel: String?, delayInMilliseconds: Long?): Rating {
         delay(timeMillis = delayInMilliseconds ?: ZERO_DELAY)
 
         return RatingLevel.valueOf(value = ratingLevel?.uppercase() ?: RatingLevel.P.name).let {
