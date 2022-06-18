@@ -46,6 +46,14 @@ jobs:
       - name: Push latest Docker Image
         run: docker push ${{ github.repository }}:latest
 
+      - name: Sync dev branch with master branch
+        uses: repo-sync/github-sync@v2
+        with:
+          source_repo: ${{ github.repository }}
+          source_branch: master
+          destination_branch: dev
+          github_token: ${{ secrets.SYNC_BRANCHES_PAT }}
+
       - name: Sync integrationtest branch with master branch
         uses: repo-sync/github-sync@v2
         with:

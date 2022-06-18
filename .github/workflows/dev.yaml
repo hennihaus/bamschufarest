@@ -1,0 +1,19 @@
+name: Cleanup dev branch
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Sync dev branch with master branch
+        uses: repo-sync/github-sync@v2
+        with:
+          source_repo: ${{ github.repository }}
+          source_branch: master
+          destination_branch: dev
+          github_token: ${{ secrets.SYNC_BRANCHES_PAT }}
