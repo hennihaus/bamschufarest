@@ -1,11 +1,11 @@
-name: Cleanup dev branch
+name: Cleanup
 
 on:
   schedule:
-    - cron: '12 11 * * *'
+    - cron: '45 1 * * *'
 
 jobs:
-  sync:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
