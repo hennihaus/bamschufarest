@@ -18,7 +18,7 @@ class RatingResourcesTest {
     fun init() = clearAllMocks()
 
     @Nested
-    inner class RatingResourceValidate {
+    inner class Validate {
 
         @BeforeEach
         fun init() {
