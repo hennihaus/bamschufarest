@@ -36,4 +36,4 @@ out/
 .vscode/
 
 ### Project specific ###
-./.github/CODEOWNERS
+.github/CODEOWNERS
