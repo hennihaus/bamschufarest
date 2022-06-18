@@ -92,7 +92,7 @@
         "description": "Zeit in Millisekunden, um die die Antwort verzögert werden soll",
         "in": "query",
         "required": true,
-        "example": 0,
+        "example": "0",
         "schema": {
           "type": "integer",
           "format": "int64"
