@@ -75,4 +75,4 @@ jobs:
           source_repo: ${{ github.repository }}
           source_branch: master
           destination_branch: integrationtest
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.SYNC_BRANCHES_PAT }}
