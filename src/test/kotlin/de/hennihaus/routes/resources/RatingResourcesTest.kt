@@ -1,9 +1,8 @@
 package de.hennihaus.routes.resources
 
-import de.hennihaus.objectmothers.ScoreObjectMother.getMinValidRequestScore
+import de.hennihaus.objectmothers.RatingObjectMother.getMinValidRatingResource
 import de.hennihaus.utils.ValidationException
 import io.kotest.assertions.throwables.shouldThrowExactly
-import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -19,151 +18,144 @@ class RatingResourcesTest {
     fun init() = clearAllMocks()
 
     @Nested
-    inner class ScoreValidate {
+    inner class RatingResourceValidate {
 
         @BeforeEach
         fun init() {
             mockkObject(RatingResourcesTest)
 
-            every { testOperation(score = any()) } returns Unit
+            every { testOperation(ratingResource = any()) } returns Unit
         }
 
         @Test
-        fun `should execute test operation when score is valid`() {
-            val classUnderTest = getMinValidRequestScore()
+        fun `should execute test operation when rating is valid`() {
+            val classUnderTest = getMinValidRatingResource()
 
-            classUnderTest.validate { testOperation(score = it) }
+            classUnderTest.validate { testOperation(ratingResource = it) }
 
             verify(exactly = 1) {
-                testOperation(
-                    score = withArg {
-                        it.shouldBeEqualToIgnoringFields(
-                            other = getMinValidRequestScore(),
-                            property = Ratings.Score::parent
-                        )
-                    }
-                )
+                testOperation(ratingResource = getMinValidRatingResource())
             }
         }
 
         @Test
         fun `should throw exception and not execute test operation when socialSecurityNumber = null`() {
-            val classUnderTest = getMinValidRequestScore(socialSecurityNumber = null)
+            val classUnderTest = getMinValidRatingResource(socialSecurityNumber = null)
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[socialSecurityNumber is required]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when ratingLevel = null`() {
-            val classUnderTest = getMinValidRequestScore(ratingLevel = null)
+            val classUnderTest = getMinValidRatingResource(ratingLevel = null)
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[ratingLevel is required]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when ratingLevel = Z`() {
-            val classUnderTest = getMinValidRequestScore(ratingLevel = "Z")
+            val classUnderTest = getMinValidRatingResource(ratingLevel = "Z")
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage """
                 [ratingLevel must be one of: 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'O', 'P']
             """.trimIndent()
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when delayInMilliseconds = null`() {
-            val classUnderTest = getMinValidRequestScore(delayInMilliseconds = null)
+            val classUnderTest = getMinValidRatingResource(delayInMilliseconds = null)
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[delayInMilliseconds is required]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when username = null`() {
-            val classUnderTest = getMinValidRequestScore(username = null)
+            val classUnderTest = getMinValidRatingResource(username = null)
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[username is required]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when username = empty`() {
-            val classUnderTest = getMinValidRequestScore(username = "")
+            val classUnderTest = getMinValidRatingResource(username = "")
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[username must have at least 1 characters]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when password = null`() {
-            val classUnderTest = getMinValidRequestScore(password = null)
+            val classUnderTest = getMinValidRatingResource(password = null)
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[password is required]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 
         @Test
         fun `should throw exception and not execute test operation when password = empty`() {
-            val classUnderTest = getMinValidRequestScore(password = "")
+            val classUnderTest = getMinValidRatingResource(password = "")
 
             val result: ValidationException = shouldThrowExactly {
                 classUnderTest.validate {
-                    testOperation(score = it)
+                    testOperation(ratingResource = it)
                 }
             }
 
             result shouldHaveMessage "[password must have at least 1 characters]"
-            verify(exactly = 0) { testOperation(score = any()) }
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
     }
 
     companion object {
-        fun testOperation(score: Ratings.Score) {
-            println(score)
+        fun testOperation(ratingResource: RatingResource) {
+            println(ratingResource)
         }
     }
 }

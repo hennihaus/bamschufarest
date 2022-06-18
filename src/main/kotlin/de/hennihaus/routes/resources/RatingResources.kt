@@ -9,37 +9,30 @@ import io.ktor.resources.Resource
 import kotlinx.serialization.Serializable
 
 object RatingPaths {
-    const val RATINGS_PATH = "/ratings"
-    const val SCORE_PATH = "/score"
+    const val RATING_PATH = "/rating"
 }
 
 @Serializable
-@Resource(RatingPaths.RATINGS_PATH)
-class Ratings {
+@Resource(RatingPaths.RATING_PATH)
+data class RatingResource(
+    val socialSecurityNumber: String? = null,
+    val ratingLevel: String? = null,
+    val delayInMilliseconds: Long? = null,
+    val username: String? = null,
+    val password: String? = null,
+)
 
-    @Serializable
-    @Resource(RatingPaths.SCORE_PATH)
-    data class Score(
-        val parent: Ratings = Ratings(),
-        val socialSecurityNumber: String? = null,
-        val ratingLevel: String? = null,
-        val delayInMilliseconds: Long? = null,
-        val username: String? = null,
-        val password: String? = null
-    )
-}
-
-inline fun Ratings.Score.validate(body: (Ratings.Score) -> Unit) {
-    val validation = Validation<Ratings.Score> {
-        Ratings.Score::socialSecurityNumber required {}
-        Ratings.Score::ratingLevel required {
+inline fun RatingResource.validate(body: (RatingResource) -> Unit) {
+    val validation = Validation<RatingResource> {
+        RatingResource::socialSecurityNumber required {}
+        RatingResource::ratingLevel required {
             enum<RatingLevel>()
         }
-        Ratings.Score::delayInMilliseconds required {}
-        Ratings.Score::username required {
+        RatingResource::delayInMilliseconds required {}
+        RatingResource::username required {
             minLength(length = 1)
         }
-        Ratings.Score::password required {
+        RatingResource::password required {
             minLength(length = 1)
         }
     }

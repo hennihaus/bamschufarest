@@ -20,12 +20,12 @@
     }
   ],
   "paths": {
-    "/ratings/score": {
+    "/rating": {
       "get": {
         "tags": [
-          "Schufa-Score"
+          "Rating"
         ],
-        "operationId": "getRatingsScore",
+        "operationId": "getRating",
         "parameters": [
           {
             "$ref": "#/components/parameters/socialSecurityNumber"
@@ -62,7 +62,7 @@
   },
   "tags": [
     {
-      "name": "Schufa-Score"
+      "name": "Rating"
     }
   ],
   "components": {
@@ -122,7 +122,7 @@
     },
     "responses": {
       "200": {
-        "description": "Schufa-Score des Debitors",
+        "description": "Score des Debitors",
         "content": {
           "application/json": {
             "schema": {
