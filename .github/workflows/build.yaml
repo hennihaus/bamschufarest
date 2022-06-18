@@ -2,7 +2,7 @@ name: Kotlin CI
 
 on: [push]
 
-# triggerBuildPipeline = 1
+# triggerBuildPipeline = 2
 
 jobs:
   build:
