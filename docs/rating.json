@@ -208,11 +208,15 @@
         "properties": {
           "score": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 9999
           },
           "failureRiskInPercent": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "minimum": 0.77,
+            "maximum": 98.07
           }
         }
       },
