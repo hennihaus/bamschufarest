@@ -16,18 +16,18 @@ fun Route.registerRatingRoutes() {
 
 private fun Route.getRating() = get<RatingResource> { request ->
     request.validate {
-        val ratingService = getKoin().get<RatingService>()
-        val trackingService = getKoin().get<TrackingService>()
+        val rating = getKoin().get<RatingService>()
+        val tracking = getKoin().get<TrackingService>()
 
-        val score = ratingService.calculateRating(
+        val score = rating.calculateRating(
             ratingLevel = it.ratingLevel,
             delayInMilliseconds = it.delayInMilliseconds,
         )
         call.respond(
             message = score.also { _ ->
-                trackingService.trackRequest(
-                    username = it.username,
-                    password = it.password,
+                tracking.trackRequest(
+                    username = it.username ?: "",
+                    password = it.password ?: "",
                 )
             },
         )

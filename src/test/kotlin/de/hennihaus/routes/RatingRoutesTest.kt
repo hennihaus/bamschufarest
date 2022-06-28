@@ -36,12 +36,12 @@ import org.koin.dsl.module
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RatingRoutesTest {
 
-    private val ratingService = mockk<RatingService>()
-    private val trackingService = mockk<TrackingService>()
+    private val rating = mockk<RatingService>()
+    private val tracking = mockk<TrackingService>()
 
     private val mockModule = module {
-        single { ratingService }
-        single { trackingService }
+        single { rating }
+        single { tracking }
     }
 
     @BeforeEach
@@ -56,9 +56,9 @@ class RatingRoutesTest {
         @BeforeEach
         fun init() {
             // default behavior
-            coEvery { trackingService.trackRequest(username = any(), password = any()) } returns Unit
+            coEvery { tracking.trackRequest(username = any(), password = any()) } returns Unit
             coEvery {
-                ratingService.calculateRating(
+                rating.calculateRating(
                     ratingLevel = any(),
                     delayInMilliseconds = any(),
                 )
@@ -89,8 +89,8 @@ class RatingRoutesTest {
             response shouldHaveStatus HttpStatusCode.OK
             response.body<Rating>() shouldBe getBestRating()
             coVerifySequence {
-                ratingService.calculateRating(ratingLevel = ratingLevel, delayInMilliseconds = delayInMilliseconds)
-                trackingService.trackRequest(username = username, password = password)
+                rating.calculateRating(ratingLevel = ratingLevel, delayInMilliseconds = delayInMilliseconds)
+                tracking.trackRequest(username = username, password = password)
             }
         }
 
@@ -126,8 +126,8 @@ class RatingRoutesTest {
                     property = LocalDateTime::second,
                 )
             }
-            coVerify(exactly = 0) { ratingService.calculateRating(ratingLevel = any(), delayInMilliseconds = any()) }
-            coVerify(exactly = 0) { trackingService.trackRequest(username = any(), password = any()) }
+            coVerify(exactly = 0) { rating.calculateRating(ratingLevel = any(), delayInMilliseconds = any()) }
+            coVerify(exactly = 0) { tracking.trackRequest(username = any(), password = any()) }
         }
 
         @Test
@@ -139,7 +139,7 @@ class RatingRoutesTest {
                 username,
                 password,
             ) = getMinValidRatingResource()
-            coEvery { trackingService.trackRequest(username = any(), password = any()) } throws NotFoundException(
+            coEvery { tracking.trackRequest(username = any(), password = any()) } throws NotFoundException(
                 message = ErrorMessage.NOT_FOUND_MESSAGE
             )
 
@@ -176,7 +176,7 @@ class RatingRoutesTest {
                 username,
                 password
             ) = getMinValidRatingResource()
-            coEvery { trackingService.trackRequest(username = any(), password = any()) } throws IllegalStateException()
+            coEvery { tracking.trackRequest(username = any(), password = any()) } throws IllegalStateException()
 
             val response = testClient.get(
                 urlString = """
