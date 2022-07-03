@@ -47,7 +47,6 @@ class RatingServiceTest {
             result.score shouldBeInRange 9858..9999
         }
 
-
         @Test
         fun `should return correct rating when ratingLevel = a and delayInMilliseconds = 0`() = runBlocking {
             val ratingLevel = "${RatingLevel.A}".lowercase()
