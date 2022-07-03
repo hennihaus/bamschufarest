@@ -1,6 +1,7 @@
 package de.hennihaus.plugins
 
 import de.hennihaus.configurations.configBackendModule
+import de.hennihaus.configurations.defaultModule
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.routing.Route
@@ -8,7 +9,6 @@ import io.ktor.server.routing.Routing
 import org.koin.core.KoinApplication
 import org.koin.core.module.Module
 import org.koin.fileProperties
-import org.koin.ksp.generated.defaultModule
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.koin.ktor.ext.getProperty as property
@@ -19,7 +19,7 @@ fun Application.configureDependencyInjection(vararg koinModules: Module) = insta
 
 fun KoinApplication.initKoin(
     properties: Map<String, String> = emptyMap(),
-    vararg modules: Module = arrayOf(defaultModule, configBackendModule)
+    vararg modules: Module = arrayOf(defaultModule, configBackendModule),
 ) {
     slf4jLogger()
     fileProperties()

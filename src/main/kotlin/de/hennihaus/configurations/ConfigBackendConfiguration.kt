@@ -4,13 +4,9 @@ import de.hennihaus.configurations.ConfigBackendConfiguration.Companion.CONFIG_B
 import de.hennihaus.configurations.ConfigBackendConfiguration.Companion.CONFIG_BACKEND_PORT
 import de.hennihaus.configurations.ConfigBackendConfiguration.Companion.CONFIG_BACKEND_PROTOCOL
 import de.hennihaus.configurations.ConfigBackendConfiguration.Companion.CONFIG_BACKEND_RETRIES
-import io.ktor.client.engine.cio.CIO
 import org.koin.dsl.module
 
 val configBackendModule = module {
-    single {
-        CIO.create()
-    }
     single {
         val protocol = getProperty<String>(key = CONFIG_BACKEND_PROTOCOL)
         val host = getProperty<String>(key = CONFIG_BACKEND_HOST)
@@ -21,7 +17,7 @@ val configBackendModule = module {
             protocol = protocol,
             host = host,
             port = port.toInt(),
-            maxRetries = maxRetries.toInt()
+            maxRetries = maxRetries.toInt(),
         )
     }
 }

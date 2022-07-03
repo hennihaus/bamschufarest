@@ -2,14 +2,17 @@ package de.hennihaus.routes
 
 import de.hennihaus.models.generated.Error
 import de.hennihaus.models.generated.Rating
+import de.hennihaus.objectmothers.ErrorObjectMother.DEFAULT_INVALID_REQUEST_ERROR_MESSAGE
+import de.hennihaus.objectmothers.ErrorObjectMother.DEFAULT_NOT_FOUND_ERROR_MESSAGE
 import de.hennihaus.objectmothers.ErrorObjectMother.getInternalServerError
 import de.hennihaus.objectmothers.ErrorObjectMother.getInvalidRequestError
 import de.hennihaus.objectmothers.ErrorObjectMother.getNotFoundError
 import de.hennihaus.objectmothers.RatingObjectMother.getBestRating
 import de.hennihaus.objectmothers.RatingObjectMother.getMinValidRatingResource
-import de.hennihaus.plugins.ErrorMessage
+import de.hennihaus.plugins.ValidationException
 import de.hennihaus.services.RatingService
 import de.hennihaus.services.TrackingService
+import de.hennihaus.services.resourceservices.RatingResourceService
 import de.hennihaus.testutils.KtorTestBuilder.testApplicationWith
 import de.hennihaus.testutils.testClient
 import io.kotest.assertions.ktor.client.shouldHaveStatus
@@ -25,6 +28,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
 import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -37,10 +41,12 @@ import org.koin.dsl.module
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RatingRoutesTest {
 
+    private val ratingResource = spyk<RatingResourceService>()
     private val rating = mockk<RatingService>()
     private val tracking = mockk<TrackingService>()
 
     private val mockModule = module {
+        single { ratingResource }
         single { rating }
         single { tracking }
     }
@@ -90,8 +96,19 @@ class RatingRoutesTest {
             response shouldHaveStatus HttpStatusCode.OK
             response.body<Rating>() shouldBe getBestRating()
             coVerifySequence {
-                rating.calculateRating(ratingLevel = ratingLevel, delayInMilliseconds = delayInMilliseconds)
-                tracking.trackRequest(username = username!!, password = password!!)
+                ratingResource.validate(
+                    resource = getMinValidRatingResource(),
+                    body = any(),
+                )
+                ratingResource.resourceValidation
+                rating.calculateRating(
+                    ratingLevel = ratingLevel,
+                    delayInMilliseconds = delayInMilliseconds,
+                )
+                tracking.trackRequest(
+                    username = username!!,
+                    password = password!!,
+                )
             }
         }
 
@@ -104,6 +121,9 @@ class RatingRoutesTest {
                 username,
             ) = getMinValidRatingResource()
             val password = ""
+            coEvery { ratingResource.validate(resource = any(), body = any()) } throws ValidationException(
+                message = DEFAULT_INVALID_REQUEST_ERROR_MESSAGE,
+            )
 
             val response = testClient.get(
                 urlString = """
@@ -127,8 +147,26 @@ class RatingRoutesTest {
                     property = LocalDateTime::second,
                 )
             }
-            coVerify(exactly = 0) { rating.calculateRating(ratingLevel = any(), delayInMilliseconds = any()) }
-            coVerify(exactly = 0) { tracking.trackRequest(username = any(), password = any()) }
+            coVerify(exactly = 1) {
+                ratingResource.validate(
+                    resource = getMinValidRatingResource(
+                        password = ""
+                    ),
+                    body = any(),
+                )
+            }
+            coVerify(exactly = 0) {
+                rating.calculateRating(
+                    ratingLevel = any(),
+                    delayInMilliseconds = any(),
+                )
+            }
+            coVerify(exactly = 0) {
+                tracking.trackRequest(
+                    username = any(),
+                    password = any(),
+                )
+            }
         }
 
         @Test
@@ -141,7 +179,7 @@ class RatingRoutesTest {
                 password,
             ) = getMinValidRatingResource()
             coEvery { tracking.trackRequest(username = any(), password = any()) } throws NotFoundException(
-                message = ErrorMessage.NOT_FOUND_MESSAGE
+                message = DEFAULT_NOT_FOUND_ERROR_MESSAGE,
             )
 
             val response = testClient.get(
