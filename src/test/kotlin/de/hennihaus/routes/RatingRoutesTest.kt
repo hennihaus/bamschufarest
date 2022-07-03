@@ -2,6 +2,7 @@ package de.hennihaus.routes
 
 import de.hennihaus.models.generated.Error
 import de.hennihaus.models.generated.Rating
+import de.hennihaus.objectmothers.ErrorObjectMother.getInternalServerError
 import de.hennihaus.objectmothers.ErrorObjectMother.getInvalidRequestError
 import de.hennihaus.objectmothers.ErrorObjectMother.getNotFoundError
 import de.hennihaus.objectmothers.RatingObjectMother.getBestRating
@@ -90,7 +91,7 @@ class RatingRoutesTest {
             response.body<Rating>() shouldBe getBestRating()
             coVerifySequence {
                 rating.calculateRating(ratingLevel = ratingLevel, delayInMilliseconds = delayInMilliseconds)
-                tracking.trackRequest(username = username, password = password)
+                tracking.trackRequest(username = username!!, password = password!!)
             }
         }
 
@@ -192,13 +193,13 @@ class RatingRoutesTest {
             response shouldHaveStatus HttpStatusCode.InternalServerError
             response.body<Error>() should {
                 it.shouldBeEqualToIgnoringFields(
-                    other = getNotFoundError(),
+                    other = getInternalServerError(),
                     property = Error::dateTime,
                     others = arrayOf(Error::message),
                 )
                 it.message shouldBe "${IllegalStateException()}"
                 it.dateTime.shouldBeEqualToIgnoringFields(
-                    other = getNotFoundError().dateTime,
+                    other = getInternalServerError().dateTime,
                     property = LocalDateTime::second,
                 )
             }

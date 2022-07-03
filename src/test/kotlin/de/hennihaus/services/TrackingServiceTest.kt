@@ -37,7 +37,7 @@ class TrackingServiceTest {
         @BeforeEach
         fun init() {
             groupCall = mockk<GroupCallServiceImpl>()
-            bankName = GroupObjectMother.JMS_BANK_A_NAME
+            bankName = GroupObjectMother.DEFAULT_JMS_BANK_A_NAME
             classUnderTest = TrackingServiceImpl(
                 groupCall = groupCall,
                 bankName = bankName,
@@ -47,7 +47,7 @@ class TrackingServiceTest {
             coEvery { groupCall.getAllGroups() } returns listOf(
                 getFirstGroup(),
                 getSecondGroup(),
-                getThirdGroup()
+                getThirdGroup(),
             )
             coEvery { groupCall.updateGroup(id = any(), group = any()) } returns mockk()
         }
@@ -66,7 +66,7 @@ class TrackingServiceTest {
                         stats = stats + Pair(
                             first = bankName,
                             second = stats[bankName]!! + 1,
-                        )
+                        ),
                     ),
                 )
             }
@@ -90,8 +90,8 @@ class TrackingServiceTest {
         }
 
         @Test
-        fun `should throw an exception and not update stats when username is null`() = runBlocking {
-            val username = null
+        fun `should throw an exception and not update stats when username is unknown`() = runBlocking {
+            val username = "unknown"
             val password = getThirdGroup().password
 
             val result: NotFoundException = shouldThrowExactly {
@@ -107,9 +107,9 @@ class TrackingServiceTest {
         }
 
         @Test
-        fun `should throw an exception and not update stats when password is null`() = runBlocking {
+        fun `should throw an exception and not update stats when password is unknown`() = runBlocking {
             val username = getThirdGroup().username
-            val password = null
+            val password = "unknown"
 
             val result: NotFoundException = shouldThrowExactly {
                 classUnderTest.trackRequest(

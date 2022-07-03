@@ -23,13 +23,12 @@ class RatingResourcesTest {
         @BeforeEach
         fun init() {
             mockkObject(RatingResourcesTest)
-
-            every { testOperation(ratingResource = any()) } returns Unit
         }
 
         @Test
         fun `should execute test operation when rating is valid`() {
             val classUnderTest = getMinValidRatingResource()
+            every { testOperation(ratingResource = any()) } returns Unit
 
             classUnderTest.validate { testOperation(ratingResource = it) }
 
@@ -49,6 +48,20 @@ class RatingResourcesTest {
             }
 
             result shouldHaveMessage "[socialSecurityNumber is required]"
+            verify(exactly = 0) { testOperation(ratingResource = any()) }
+        }
+
+        @Test
+        fun `should throw exception and not execute test operation when socialSecurityNumber = empty`() {
+            val classUnderTest = getMinValidRatingResource(socialSecurityNumber = "")
+
+            val result: ValidationException = shouldThrowExactly {
+                classUnderTest.validate {
+                    testOperation(ratingResource = it)
+                }
+            }
+
+            result shouldHaveMessage "[socialSecurityNumber must have at least 1 characters]"
             verify(exactly = 0) { testOperation(ratingResource = any()) }
         }
 

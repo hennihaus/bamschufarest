@@ -10,7 +10,7 @@ import kotlinx.datetime.toLocalDateTime
 
 object ErrorObjectMother {
 
-    private const val DEFAULT_ZONE_ID = "Europe/Berlin"
+    const val DEFAULT_ZONE_ID = "Europe/Berlin"
 
     fun getInvalidRequestError(
         message: String = "[password must have at least 1 characters]",

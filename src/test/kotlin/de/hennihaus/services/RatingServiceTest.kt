@@ -2,10 +2,12 @@ package de.hennihaus.services
 
 import de.hennihaus.models.RatingLevel
 import de.hennihaus.models.generated.Rating
+import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.ints.shouldBeInRange
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.longs.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldNotBeEmpty
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -30,6 +32,21 @@ class RatingServiceTest {
             result.failureRiskInPercent shouldBe 0.77
             result.score shouldBeInRange 9858..9999
         }
+
+        @Test
+        fun `should return correct rating when ratingLevel = A and delayInMilliseconds = -1`() = runBlocking<Unit> {
+            val ratingLevel = "${RatingLevel.A}"
+            val delayInMilliseconds = -1L
+
+            val result: Rating = classUnderTest.calculateRating(
+                ratingLevel = ratingLevel,
+                delayInMilliseconds = delayInMilliseconds,
+            )
+
+            result.failureRiskInPercent shouldBe 0.77
+            result.score shouldBeInRange 9858..9999
+        }
+
 
         @Test
         fun `should return correct rating when ratingLevel = a and delayInMilliseconds = 0`() = runBlocking {
@@ -283,6 +300,21 @@ class RatingServiceTest {
 
             result.failureRiskInPercent shouldBe 98.07
             result.score shouldBeInRange 1..785
+        }
+
+        @Test
+        fun `should throw an exception when ratingLevel = unknown and delayInMilliseconds = 0`() = runBlocking<Unit> {
+            val ratingLevel = "unknown"
+            val delayInMilliseconds = 0L
+
+            val result: IllegalArgumentException = shouldThrowExactly {
+                classUnderTest.calculateRating(
+                    ratingLevel = ratingLevel,
+                    delayInMilliseconds = delayInMilliseconds,
+                )
+            }
+
+            result.message.shouldNotBeEmpty()
         }
     }
 }
