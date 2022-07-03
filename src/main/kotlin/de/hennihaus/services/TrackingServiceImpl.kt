@@ -10,10 +10,10 @@ import org.koin.core.annotation.Single
 @Single
 class TrackingServiceImpl(
     private val groupCall: GroupCallService,
-    @Property(BANK_NAME) private val bankName: String
+    @Property(BANK_NAME) private val bankName: String,
 ) : TrackingService {
 
-    override suspend fun trackRequest(username: String?, password: String?) {
+    override suspend fun trackRequest(username: String, password: String) {
         val group = groupCall.getAllGroups().find {
             (it.username == username) and (it.password == password)
         }

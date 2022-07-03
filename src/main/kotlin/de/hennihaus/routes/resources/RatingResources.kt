@@ -24,7 +24,9 @@ data class RatingResource(
 
 inline fun RatingResource.validate(body: (RatingResource) -> Unit) {
     val validation = Validation<RatingResource> {
-        RatingResource::socialSecurityNumber required {}
+        RatingResource::socialSecurityNumber required {
+            minLength(length = 1)
+        }
         RatingResource::ratingLevel required {
             enum<RatingLevel>()
         }
