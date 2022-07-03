@@ -1,9 +1,9 @@
 package de.hennihaus.routes
 
 import de.hennihaus.routes.resources.RatingResource
-import de.hennihaus.routes.resources.validate
 import de.hennihaus.services.RatingService
 import de.hennihaus.services.TrackingService
+import de.hennihaus.services.resourceservices.RatingResourceService
 import io.ktor.server.application.call
 import io.ktor.server.resources.get
 import io.ktor.server.response.respond
@@ -15,10 +15,11 @@ fun Route.registerRatingRoutes() {
 }
 
 private fun Route.getRating() = get<RatingResource> { request ->
-    request.validate {
-        val rating = getKoin().get<RatingService>()
-        val tracking = getKoin().get<TrackingService>()
+    val ratingResource = getKoin().get<RatingResourceService>()
+    val rating = getKoin().get<RatingService>()
+    val tracking = getKoin().get<TrackingService>()
 
+    ratingResource.validate(resource = request) {
         val score = rating.calculateRating(
             ratingLevel = it.ratingLevel,
             delayInMilliseconds = it.delayInMilliseconds,

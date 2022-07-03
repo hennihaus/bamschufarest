@@ -4,10 +4,9 @@ import de.hennihaus.objectmothers.GroupObjectMother
 import de.hennihaus.objectmothers.GroupObjectMother.getFirstGroup
 import de.hennihaus.objectmothers.GroupObjectMother.getSecondGroup
 import de.hennihaus.objectmothers.GroupObjectMother.getThirdGroup
-import de.hennihaus.services.TrackingServiceImpl.Companion.BANK_NOT_FOUND_MESSAGE
-import de.hennihaus.services.TrackingServiceImpl.Companion.GROUP_NOT_FOUND_MESSAGE
+import de.hennihaus.services.TrackingService.Companion.BANK_NOT_FOUND_MESSAGE
+import de.hennihaus.services.TrackingService.Companion.GROUP_NOT_FOUND_MESSAGE
 import de.hennihaus.services.callservices.GroupCallService
-import de.hennihaus.services.callservices.GroupCallServiceImpl
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.ktor.server.plugins.NotFoundException
@@ -36,9 +35,9 @@ class TrackingServiceTest {
 
         @BeforeEach
         fun init() {
-            groupCall = mockk<GroupCallServiceImpl>()
+            groupCall = mockk()
             bankName = GroupObjectMother.DEFAULT_JMS_BANK_A_NAME
-            classUnderTest = TrackingServiceImpl(
+            classUnderTest = TrackingService(
                 groupCall = groupCall,
                 bankName = bankName,
             )
@@ -127,7 +126,7 @@ class TrackingServiceTest {
         fun `should throw an exception and not update stats when bankName is unknown`() = runBlocking {
             val (_, username, password) = getThirdGroup()
             bankName = "unknown"
-            classUnderTest = TrackingServiceImpl(
+            classUnderTest = TrackingService(
                 groupCall = groupCall,
                 bankName = bankName,
             )

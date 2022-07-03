@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
 
 class RatingServiceTest {
 
-    private val classUnderTest = RatingServiceImpl()
+    private val classUnderTest = RatingService()
 
     @Nested
     inner class CalculateRating {
@@ -34,7 +34,7 @@ class RatingServiceTest {
         }
 
         @Test
-        fun `should return correct rating when ratingLevel = A and delayInMilliseconds = -1`() = runBlocking<Unit> {
+        fun `should return correct rating when ratingLevel = A and delayInMilliseconds = -1`() = runBlocking {
             val ratingLevel = "${RatingLevel.A}"
             val delayInMilliseconds = -1L
 
@@ -168,7 +168,7 @@ class RatingServiceTest {
 
             val result: Rating = classUnderTest.calculateRating(
                 ratingLevel = ratingLevel,
-                delayInMilliseconds = delayInMilliseconds
+                delayInMilliseconds = delayInMilliseconds,
             )
 
             result.failureRiskInPercent shouldBe 7.06

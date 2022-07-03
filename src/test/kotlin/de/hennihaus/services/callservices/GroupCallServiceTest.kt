@@ -42,7 +42,7 @@ class GroupCallServiceTest {
                     )
                 }
             )
-            classUnderTest = GroupCallServiceImpl(
+            classUnderTest = GroupCallService(
                 engine = engine,
                 config = config,
             )
@@ -63,7 +63,7 @@ class GroupCallServiceTest {
                     value = emptyList<Group>(),
                 ),
             )
-            classUnderTest = GroupCallServiceImpl(
+            classUnderTest = GroupCallService(
                 engine = engine,
                 config = getConfigBackendConfiguration(),
             )
@@ -80,7 +80,7 @@ class GroupCallServiceTest {
                 status = HttpStatusCode.InternalServerError,
                 assertions = { counter++ },
             )
-            classUnderTest = GroupCallServiceImpl(
+            classUnderTest = GroupCallService(
                 engine = engine,
                 config = getConfigBackendConfiguration(maxRetries = 2),
             )
@@ -110,7 +110,7 @@ class GroupCallServiceTest {
                     // it.body shouldBe group.toBody()
                 },
             )
-            classUnderTest = GroupCallServiceImpl(
+            classUnderTest = GroupCallService(
                 engine = engine,
                 config = config,
             )
@@ -131,7 +131,7 @@ class GroupCallServiceTest {
                 status = HttpStatusCode.InternalServerError,
                 assertions = { counter++ },
             )
-            classUnderTest = GroupCallServiceImpl(
+            classUnderTest = GroupCallService(
                 engine = engine,
                 config = getConfigBackendConfiguration(maxRetries = 2),
             )

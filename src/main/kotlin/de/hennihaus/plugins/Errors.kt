@@ -1,8 +1,6 @@
 package de.hennihaus.plugins
 
 import de.hennihaus.models.generated.Error
-import de.hennihaus.plugins.ErrorMessage.NOT_FOUND_MESSAGE
-import de.hennihaus.utils.ValidationException
 import de.hennihaus.utils.withoutNanos
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
@@ -31,21 +29,21 @@ fun Application.configureErrorHandling() {
                     message = Error(
                         message = throwable.message,
                         dateTime = dateTime,
-                    )
+                    ),
                 )
                 is NotFoundException -> call.respond(
                     status = HttpStatusCode.NotFound,
                     message = Error(
-                        message = throwable.message ?: NOT_FOUND_MESSAGE,
+                        message = "${throwable.message}",
                         dateTime = dateTime,
-                    )
+                    ),
                 )
                 else -> call.respond(
                     status = HttpStatusCode.InternalServerError,
                     message = Error(
                         message = "$throwable",
                         dateTime = dateTime,
-                    )
+                    ),
                 )
             }
         }
@@ -53,6 +51,7 @@ fun Application.configureErrorHandling() {
 }
 
 object ErrorMessage {
-    const val NOT_FOUND_MESSAGE = "[resource not found]"
     const val MISSING_PROPERTY_MESSAGE = "Missing property"
 }
+
+class ValidationException(override val message: String) : RuntimeException()
