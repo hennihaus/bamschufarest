@@ -21,7 +21,7 @@ object KtorTestBuilder {
 
 val ApplicationTestBuilder.testClient
     get() = createClient {
-        install(ContentNegotiation) {
+        install(plugin = ContentNegotiation) {
             json(json = Json)
         }
     }

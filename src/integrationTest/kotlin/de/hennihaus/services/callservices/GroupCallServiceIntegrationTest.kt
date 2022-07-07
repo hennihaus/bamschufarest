@@ -1,9 +1,8 @@
-package de.hennihaus.service.callservices
+package de.hennihaus.services.callservices
 
 import de.hennihaus.models.Group
 import de.hennihaus.objectmothers.GroupObjectMother
 import de.hennihaus.plugins.initKoin
-import de.hennihaus.services.callservices.GroupCallService
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.runBlocking

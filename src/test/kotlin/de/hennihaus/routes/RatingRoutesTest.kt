@@ -28,7 +28,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
 import io.mockk.mockk
-import io.mockk.spyk
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +40,7 @@ import org.koin.dsl.module
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class RatingRoutesTest {
 
-    private val ratingResource = spyk<RatingResourceService>()
+    private val ratingResource = mockk<RatingResourceService>()
     private val rating = mockk<RatingService>()
     private val tracking = mockk<TrackingService>()
 
@@ -63,6 +62,7 @@ class RatingRoutesTest {
         @BeforeEach
         fun init() {
             // default behavior
+            coEvery { ratingResource.validate(resource = any()) } returns getMinValidRatingResource()
             coEvery { tracking.trackRequest(username = any(), password = any()) } returns Unit
             coEvery {
                 rating.calculateRating(
@@ -90,7 +90,7 @@ class RatingRoutesTest {
                     &delayInMilliseconds=$delayInMilliseconds
                     &username=$username
                     &password=$password
-                """.trimIndent().replace("\n", ""),
+                """.trimIndent().replace(oldValue = "\n", newValue = ""),
             )
 
             response shouldHaveStatus HttpStatusCode.OK
@@ -98,11 +98,9 @@ class RatingRoutesTest {
             coVerifySequence {
                 ratingResource.validate(
                     resource = getMinValidRatingResource(),
-                    body = any(),
                 )
-                ratingResource.resourceValidation
                 rating.calculateRating(
-                    ratingLevel = ratingLevel,
+                    ratingLevel = ratingLevel!!,
                     delayInMilliseconds = delayInMilliseconds,
                 )
                 tracking.trackRequest(
@@ -113,15 +111,15 @@ class RatingRoutesTest {
         }
 
         @Test
-        fun `should return 400 and error when request (password) was invalid`() = testApplicationWith(mockModule) {
+        fun `should return 400 and error when ratingLevel missing and invalid`() = testApplicationWith(mockModule) {
             val (
                 socialSecurityNumber,
-                ratingLevel,
+                _,
                 delayInMilliseconds,
                 username,
+                password,
             ) = getMinValidRatingResource()
-            val password = ""
-            coEvery { ratingResource.validate(resource = any(), body = any()) } throws ValidationException(
+            coEvery { ratingResource.validate(resource = any()) } throws ValidationException(
                 message = DEFAULT_INVALID_REQUEST_ERROR_MESSAGE,
             )
 
@@ -129,7 +127,6 @@ class RatingRoutesTest {
                 urlString = """
                     /rating
                     ?socialSecurityNumber=$socialSecurityNumber
-                    &ratingLevel=$ratingLevel
                     &delayInMilliseconds=$delayInMilliseconds
                     &username=$username
                     &password=$password
@@ -150,9 +147,8 @@ class RatingRoutesTest {
             coVerify(exactly = 1) {
                 ratingResource.validate(
                     resource = getMinValidRatingResource(
-                        password = ""
+                        ratingLevel = null,
                     ),
-                    body = any(),
                 )
             }
             coVerify(exactly = 0) {

@@ -22,7 +22,7 @@ object RatingObjectMother {
 
     fun getMinValidRatingResource(
         socialSecurityNumber: String? = DEFAULT_SOCIAL_SECURITY_NUMBER,
-        ratingLevel: String? = DEFAULT_RATING_LEVEL,
+        ratingLevel: String? = RatingLevel.valueOf(value = DEFAULT_RATING_LEVEL).name,
         delayInMilliseconds: Long? = DEFAULT_DELAY_IN_MILLISECONDS,
         username: String? = FIRST_GROUP_USERNAME,
         password: String? = DEFAULT_PASSWORD,

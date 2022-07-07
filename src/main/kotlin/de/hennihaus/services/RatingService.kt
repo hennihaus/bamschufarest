@@ -8,10 +8,10 @@ import org.koin.core.annotation.Single
 @Single
 class RatingService {
 
-    suspend fun calculateRating(ratingLevel: String?, delayInMilliseconds: Long?): Rating {
+    suspend fun calculateRating(ratingLevel: String, delayInMilliseconds: Long?): Rating {
         delay(timeMillis = delayInMilliseconds ?: ZERO_DELAY)
 
-        return RatingLevel.valueOf(value = ratingLevel?.uppercase() ?: RatingLevel.P.name).let {
+        return RatingLevel.valueOf(value = ratingLevel.uppercase()).let {
             Rating(
                 score = (it.minScore..it.maxScore).random(),
                 failureRiskInPercent = it.failureRiskInPercent,

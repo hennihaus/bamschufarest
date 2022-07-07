@@ -99,6 +99,7 @@ dependencies {
     // test plugins
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+    testImplementation("io.kotest:kotest-property-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-ktor-jvm:$kotestLibariesVersion")
     testImplementation("io.kotest:kotest-assertions-kotlinx-time-jvm:$kotestLibariesVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
