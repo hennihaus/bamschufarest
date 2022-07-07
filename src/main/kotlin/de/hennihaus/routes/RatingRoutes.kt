@@ -19,9 +19,9 @@ private fun Route.getRating() = get<RatingResource> { request ->
     val rating = getKoin().get<RatingService>()
     val tracking = getKoin().get<TrackingService>()
 
-    ratingResource.validate(resource = request) {
+    ratingResource.validate(resource = request).also {
         val score = rating.calculateRating(
-            ratingLevel = it.ratingLevel,
+            ratingLevel = requireNotNull(value = it.ratingLevel),
             delayInMilliseconds = it.delayInMilliseconds,
         )
         call.respond(

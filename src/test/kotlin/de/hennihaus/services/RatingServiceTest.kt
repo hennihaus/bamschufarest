@@ -62,20 +62,6 @@ class RatingServiceTest {
         }
 
         @Test
-        fun `should return most bad rating when ratingLevel = null and delayInMilliseconds = 0`() = runBlocking {
-            val ratingLevel = null
-            val delayInMilliseconds = 0L
-
-            val result: Rating = classUnderTest.calculateRating(
-                ratingLevel = ratingLevel,
-                delayInMilliseconds = delayInMilliseconds,
-            )
-
-            result.failureRiskInPercent shouldBe 98.07
-            result.score shouldBeInRange 1..785
-        }
-
-        @Test
         fun `should delay at most 1ms when ratingLevel = A and delayInMilliseconds = null`() = runBlocking<Unit> {
             val ratingLevel = "${RatingLevel.A}"
             val delayInMilliseconds = null

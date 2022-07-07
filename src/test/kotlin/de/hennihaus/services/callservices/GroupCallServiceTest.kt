@@ -11,6 +11,9 @@ import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.ktor.client.plugins.ServerResponseException
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.runBlocking
@@ -37,9 +40,11 @@ class GroupCallServiceTest {
                     ),
                 ),
                 assertions = {
+                    it.method shouldBe HttpMethod.Get
                     it.url shouldBe Url(
                         urlString = "${config.protocol}://${config.host}:${config.port}$GROUPS_PATH"
                     )
+                    it.headers[HttpHeaders.Accept] shouldBe "${ContentType.Application.Json}"
                 }
             )
             classUnderTest = GroupCallService(
@@ -104,9 +109,11 @@ class GroupCallServiceTest {
                     value = group,
                 ),
                 assertions = {
+                    it.method shouldBe HttpMethod.Put
                     it.url shouldBe Url(
                         urlString = "${config.protocol}://${config.host}:${config.port}$GROUPS_PATH/${group.id}"
                     )
+                    it.headers[HttpHeaders.Accept] shouldBe "${ContentType.Application.Json}"
                     // it.body shouldBe group.toBody()
                 },
             )

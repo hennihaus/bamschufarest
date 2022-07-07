@@ -3,23 +3,23 @@ package de.hennihaus.services.resourceservices
 import de.hennihaus.plugins.ValidationException
 import io.konform.validation.Validation
 import io.konform.validation.jsonschema.maxLength
-import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
-import io.mockk.mockkObject
-import io.mockk.verify
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class ResourceServiceTest {
 
-    data class TestResource(val value: String)
+    data class TestResource(val firstValue: String, val secondValue: String)
 
-    val classUnderTest = object : ResourceService<TestResource, Unit> {
-        override val resourceValidation: Validation<TestResource> = Validation {
-            TestResource::value {
+    val classUnderTest = object : ResourceService<TestResource> {
+        override suspend fun resourceValidation(): Validation<TestResource> = Validation {
+            TestResource::firstValue {
+                maxLength(length = 0)
+            }
+            TestResource::secondValue {
                 maxLength(length = 0)
             }
         }
@@ -28,46 +28,28 @@ class ResourceServiceTest {
     @Nested
     inner class Validate {
 
-        @BeforeEach
-        fun init() {
-            mockkObject(ResourceServiceTest)
+        @Test
+        fun `should return same resource when values are valid`() = runBlocking {
+            val resource = TestResource(firstValue = "", secondValue = "")
+
+            val result: TestResource = classUnderTest.validate(
+                resource = resource,
+            )
+
+            result shouldBe resource
         }
 
         @Test
-        fun `should not throw an exception when value is valid`() = runBlocking {
-            val resource = TestResource(value = "")
-
-            shouldNotThrowAny {
-                classUnderTest.validate(resource = resource) {
-                    testOperation(resource = it)
-                }
-            }
-
-            verify(exactly = 1) {
-                testOperation(resource = resource)
-            }
-        }
-
-        @Test
-        fun `should throw exception and correct message when value is invalid`() = runBlocking {
-            val resource = TestResource(value = "invalid")
+        fun `should throw exception and correct message when values are invalid`() = runBlocking {
+            val resource = TestResource(firstValue = "invalid", secondValue = "invalid")
 
             val result: ValidationException = shouldThrowExactly {
-                classUnderTest.validate(resource = resource) {
-                    testOperation(resource = it)
-                }
+                classUnderTest.validate(resource = resource)
             }
 
-            result shouldHaveMessage "[value must have at most 0 characters]"
-            verify(exactly = 0) {
-                testOperation(resource = any())
-            }
-        }
-    }
-
-    companion object {
-        fun testOperation(resource: TestResource) {
-            println(resource)
+            result shouldHaveMessage """
+                [firstValue must have at most 0 characters, secondValue must have at most 0 characters]
+            """.trimIndent()
         }
     }
 }

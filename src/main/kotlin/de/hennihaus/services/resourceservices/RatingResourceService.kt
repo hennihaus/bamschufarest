@@ -9,9 +9,9 @@ import io.konform.validation.jsonschema.minLength
 import org.koin.core.annotation.Single
 
 @Single
-class RatingResourceService : ResourceService<RatingResource, Unit> {
+class RatingResourceService : ResourceService<RatingResource> {
 
-    override val resourceValidation: Validation<RatingResource> = Validation {
+    override suspend fun resourceValidation(): Validation<RatingResource> = Validation {
         RatingResource::socialSecurityNumber required {
             minLength(length = SOCIAL_SECURITY_NUMBER_MIN_LENGTH)
         }
