@@ -1,241 +1,241 @@
 {
-  "openapi": "3.0.3",
-  "info": {
-    "title": "BAM Business Integration - Schufa-Auskunft",
-    "contact": {
-      "name": "Jan-Hendrik Hausner",
-      "email": "jan-hendrik.hausner@outlook.com"
+    "openapi": "3.0.3",
+    "info": {
+        "title": "BAM Business Integration - Schufa-Auskunft",
+        "contact": {
+            "name": "Jan-Hendrik Hausner",
+            "email": "jan-hendrik.hausner@outlook.com"
+        },
+        "description": "<p>Schufa-Auskunft-Beschreibung (\"1. Integrationsschritt\")</p>",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://github.com/hennihaus/bamschufarest/blob/master/LICENSE"
+        },
+        "version": "1.0.0"
     },
-    "description": "<p>Die Schufa ist ein WebService, welcher eine virtuelle Schufa darstellt. Dieser Service ist sowohl als SOAP-Service als auch als REST-Service erreichbar. Die Eingabeparameter entnehmen Sie der Parameterliste. Als Antwort liefert der WebService anschließend ein zufälliges Rating in Form des Schufa Score-Wertes (\"rating\", als int zwischen 0 und 9.999,) und eine Ausfallwahrscheinlichkeit &nbsp;( “failureRiskInPercent” als double) . Um die Anwendung trotz Zufallswerte entsprechend testen zu können, muss auch übergeben werden, welche Ratingstufe (A bis P) gewünscht ist.</p>",
-    "license": {
-      "name": "Apache 2.0",
-      "url": "https://github.com/hennihaus/bamschufarest/blob/master/LICENSE"
+    "servers": [
+        {
+            "url": "https://bambusinessintegration.wi.hs-furtwangen.de/schufa",
+            "description": "Base-URL"
+        }
+    ],
+    "paths": {
+        "/rating": {
+            "get": {
+                "tags": [
+                    "Rating"
+                ],
+                "operationId": "getRating",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/socialSecurityNumber"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ratingLevel"
+                    },
+                    {
+                        "$ref": "#/components/parameters/delayInMilliseconds"
+                    },
+                    {
+                        "$ref": "#/components/parameters/username"
+                    },
+                    {
+                        "$ref": "#/components/parameters/password"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/components/responses/200"
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
+                    }
+                }
+            }
+        }
     },
-    "version": "1.0.0"
-  },
-  "servers": [
-    {
-      "url": "https://bambusinessintegration.wi.hs-furtwangen.de/schufa",
-      "description": "Base-URL"
-    }
-  ],
-  "paths": {
-    "/rating": {
-      "get": {
-        "tags": [
-          "Rating"
-        ],
-        "operationId": "getRating",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/socialSecurityNumber"
-          },
-          {
-            "$ref": "#/components/parameters/ratingLevel"
-          },
-          {
-            "$ref": "#/components/parameters/delayInMilliseconds"
-          },
-          {
-            "$ref": "#/components/parameters/username"
-          },
-          {
-            "$ref": "#/components/parameters/password"
-          }
-        ],
+    "tags": [
+        {
+            "name": "Rating"
+        }
+    ],
+    "components": {
+        "parameters": {
+            "socialSecurityNumber": {
+                "name": "socialSecurityNumber",
+                "description": "Zufällige Sozialversicherungsnummer",
+                "in": "query",
+                "required": true,
+                "example": "12123456M123",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "ratingLevel": {
+                "name": "ratingLevel",
+                "description": "Bewertung des Debitors",
+                "in": "query",
+                "required": true,
+                "example": "A",
+                "schema": {
+                    "$ref": "#/components/schemas/RatingLevel"
+                }
+            },
+            "delayInMilliseconds": {
+                "name": "delayInMilliseconds",
+                "description": "Zeit in Millisekunden, um die die Antwort verzögert werden soll",
+                "in": "query",
+                "required": true,
+                "example": "0",
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "username": {
+                "name": "username",
+                "description": "Benutzername der Gruppe",
+                "in": "query",
+                "required": true,
+                "example": "Beispielgruppe",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "password": {
+                "name": "password",
+                "description": "Passwort der Gruppe",
+                "in": "query",
+                "required": true,
+                "example": "OOfKqWksmA",
+                "schema": {
+                    "type": "string",
+                    "format": "password"
+                }
+            }
+        },
         "responses": {
-          "200": {
-            "$ref": "#/components/responses/200"
-          },
-          "400": {
-            "$ref": "#/components/responses/400"
-          },
-          "404": {
-            "$ref": "#/components/responses/404"
-          },
-          "500": {
-            "$ref": "#/components/responses/500"
-          }
+            "200": {
+                "description": "Schufa-Score des Debitors",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Rating"
+                        },
+                        "example": {
+                            "score": 9858,
+                            "failureRiskInPercent": 0.77
+                        }
+                    }
+                }
+            },
+            "400": {
+                "description": "Ungültige Parameter",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "message": "[username is required, password is required]",
+                            "dateTime": "2022-01-31T07:43:30"
+                        }
+                    }
+                }
+            },
+            "404": {
+                "description": "Gruppe wurde nicht gefunden",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "message": "[group not found by username and password]",
+                            "dateTime": "2022-01-31T07:43:30"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "Interner Server Fehler",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/Error"
+                        },
+                        "example": {
+                            "message": "[kotlin.Exception: Internal server error]",
+                            "dateTime": "2022-01-31T07:43:30"
+                        }
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "RatingLevel": {
+                "type": "string",
+                "enum": [
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                    "E",
+                    "F",
+                    "G",
+                    "H",
+                    "I",
+                    "J",
+                    "K",
+                    "L",
+                    "N",
+                    "O",
+                    "P"
+                ]
+            },
+            "Rating": {
+                "type": "object",
+                "required": [
+                    "score",
+                    "failureRiskInPercent"
+                ],
+                "properties": {
+                    "score": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1,
+                        "maximum": 9999
+                    },
+                    "failureRiskInPercent": {
+                        "type": "number",
+                        "format": "double",
+                        "minimum": 0.77,
+                        "maximum": 98.07
+                    }
+                }
+            },
+            "Error": {
+                "type": "object",
+                "required": [
+                    "message",
+                    "dateTime"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "dateTime": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
         }
-      }
     }
-  },
-  "tags": [
-    {
-      "name": "Rating"
-    }
-  ],
-  "components": {
-    "parameters": {
-      "socialSecurityNumber": {
-        "name": "socialSecurityNumber",
-        "description": "Zufällige Sozialversicherungsnummer",
-        "in": "query",
-        "required": true,
-        "example": "12123456M123",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "ratingLevel": {
-        "name": "ratingLevel",
-        "description": "Bewertung des Debitors",
-        "in": "query",
-        "required": true,
-        "example": "A",
-        "schema": {
-          "$ref": "#/components/schemas/RatingLevel"
-        }
-      },
-      "delayInMilliseconds": {
-        "name": "delayInMilliseconds",
-        "description": "Zeit in Millisekunden, um die die Antwort verzögert werden soll",
-        "in": "query",
-        "required": true,
-        "example": "0",
-        "schema": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "username": {
-        "name": "username",
-        "description": "Benutzername der Gruppe",
-        "in": "query",
-        "required": true,
-        "example": "Beispielgruppe",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "password": {
-        "name": "password",
-        "description": "Passwort der Gruppe",
-        "in": "query",
-        "required": true,
-        "example": "OOfKqWksmA",
-        "schema": {
-          "type": "string",
-          "format": "password"
-        }
-      }
-    },
-    "responses": {
-      "200": {
-        "description": "Score des Debitors",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Rating"
-            },
-            "example": {
-              "score": 9858,
-              "failureRiskInPercent": 0.77
-            }
-          }
-        }
-      },
-      "400": {
-        "description": "Ungültige Parameter",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "message": "[username is required, password is required]",
-              "dateTime": "2022-01-31T07:43:30"
-            }
-          }
-        }
-      },
-      "404": {
-        "description": "Gruppe wurde nicht gefunden",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "message": "[group not found by username and password]",
-              "dateTime": "2022-01-31T07:43:30"
-            }
-          }
-        }
-      },
-      "500": {
-        "description": "Interner Server Fehler",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "message": "[kotlin.Exception: Internal server error]",
-              "dateTime": "2022-01-31T07:43:30"
-            }
-          }
-        }
-      }
-    },
-    "schemas": {
-      "RatingLevel": {
-        "type": "string",
-        "enum": [
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "N",
-          "O",
-          "P"
-        ]
-      },
-      "Rating": {
-        "type": "object",
-        "required": [
-          "score",
-          "failureRiskInPercent"
-        ],
-        "properties": {
-          "score": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 1,
-            "maximum": 9999
-          },
-          "failureRiskInPercent": {
-            "type": "number",
-            "format": "double",
-            "minimum": 0.77,
-            "maximum": 98.07
-          }
-        }
-      },
-      "Error": {
-        "type": "object",
-        "required": [
-          "message",
-          "dateTime"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "dateTime": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      }
-    }
-  }
 }
