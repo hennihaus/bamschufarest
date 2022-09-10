@@ -157,7 +157,7 @@
               "$ref": "#/components/schemas/Error"
             },
             "example": {
-              "message": "[group not found by username and password]",
+              "message": "[team not found by username and password]",
               "dateTime": "2022-01-31T07:43:30"
             }
           }
