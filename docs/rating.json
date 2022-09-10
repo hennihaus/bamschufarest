@@ -122,7 +122,7 @@
     },
     "responses": {
       "200": {
-        "description": "Score des Debitors",
+        "description": "Schufa-Score des Debitors",
         "content": {
           "application/json": {
             "schema": {
