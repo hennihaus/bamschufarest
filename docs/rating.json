@@ -100,17 +100,17 @@
       },
       "username": {
         "name": "username",
-        "description": "Benutzername der Gruppe",
+        "description": "Benutzername des Teams",
         "in": "query",
         "required": true,
-        "example": "Beispielgruppe",
+        "example": "Beispielteam",
         "schema": {
           "type": "string"
         }
       },
       "password": {
         "name": "password",
-        "description": "Passwort der Gruppe",
+        "description": "Passwort des Teams",
         "in": "query",
         "required": true,
         "example": "OOfKqWksmA",
@@ -150,7 +150,7 @@
         }
       },
       "404": {
-        "description": "Gruppe wurde nicht gefunden",
+        "description": "Team wurde nicht gefunden",
         "content": {
           "application/json": {
             "schema": {
