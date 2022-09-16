@@ -23,10 +23,12 @@ fun Application.configureDependencyInjection(
 
 fun KoinApplication.initKoin(
     configFilePath: String = DEFAULT_CONFIG_FILE,
-    properties: Map<String, String> = getHoconFileAsProperties(file = configFilePath),
+    properties: Map<String, String> = emptyMap(),
+    hoconProperties: Map<String, String> = getHoconFileAsProperties(file = configFilePath),
     vararg modules: Module = arrayOf(defaultModule, configBackendModule),
 ) {
     slf4jLogger()
+    properties(values = hoconProperties)
     properties(values = properties)
     modules(modules = modules)
 }
