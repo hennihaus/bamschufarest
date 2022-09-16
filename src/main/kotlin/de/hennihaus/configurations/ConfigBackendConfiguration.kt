@@ -31,10 +31,10 @@ data class ConfigBackendConfiguration(
     companion object {
         const val GROUP_ID_FIELD = "_id"
 
-        const val BANK_NAME = "ktor.application.bankName"
-        const val CONFIG_BACKEND_PROTOCOL = "ktor.configBackend.protocol"
-        const val CONFIG_BACKEND_HOST = "ktor.configBackend.host"
-        const val CONFIG_BACKEND_PORT = "ktor.configBackend.port"
-        const val CONFIG_BACKEND_RETRIES = "ktor.configBackend.retries"
+        const val BANK_NAME = "bank.name"
+        const val CONFIG_BACKEND_PROTOCOL = "configBackend.protocol"
+        const val CONFIG_BACKEND_HOST = "configBackend.host"
+        const val CONFIG_BACKEND_PORT = "configBackend.port"
+        const val CONFIG_BACKEND_RETRIES = "configBackend.retries"
     }
 }

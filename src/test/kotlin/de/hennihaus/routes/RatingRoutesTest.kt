@@ -229,9 +229,7 @@ class RatingRoutesTest {
                 it.shouldBeEqualToIgnoringFields(
                     other = getInternalServerError(),
                     property = Error::dateTime,
-                    others = arrayOf(Error::message),
                 )
-                it.message shouldBe "${IllegalStateException()}"
                 it.dateTime.shouldBeEqualToIgnoringFields(
                     other = getInternalServerError().dateTime,
                     property = LocalDateTime::second,
