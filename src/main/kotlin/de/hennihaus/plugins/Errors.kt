@@ -1,5 +1,6 @@
 package de.hennihaus.plugins
 
+import de.hennihaus.configurations.Configuration.TIMEZONE
 import de.hennihaus.models.generated.Error
 import de.hennihaus.utils.withoutNanos
 import io.ktor.http.HttpStatusCode
@@ -16,7 +17,7 @@ fun Application.configureErrorHandling() {
     val dateTime = Clock.System.now()
         .toLocalDateTime(
             timeZone = TimeZone.of(
-                zoneId = getProperty(key = "ktor.application.timezoneId"),
+                zoneId = environment.config.property(path = TIMEZONE).getString(),
             ),
         )
         .withoutNanos()

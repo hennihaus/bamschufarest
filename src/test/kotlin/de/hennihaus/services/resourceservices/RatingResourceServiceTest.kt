@@ -77,7 +77,6 @@ class RatingResourceServiceTest {
                 classUnderTest.validate(resource = resource)
             }
 
-            @Suppress("MaxLineLength")
             result shouldHaveMessage "[ratingLevel must be one of: 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'O', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n', 'o', 'p']"
         }
 
