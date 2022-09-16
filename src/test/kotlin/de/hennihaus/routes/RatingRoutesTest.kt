@@ -84,6 +84,7 @@ class RatingRoutesTest {
 
             val response = testClient.get(
                 urlString = """
+                    /v1
                     /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
@@ -125,6 +126,7 @@ class RatingRoutesTest {
 
             val response = testClient.get(
                 urlString = """
+                    /v1
                     /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &delayInMilliseconds=$delayInMilliseconds
@@ -180,6 +182,7 @@ class RatingRoutesTest {
 
             val response = testClient.get(
                 urlString = """
+                    /v1
                     /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
@@ -215,6 +218,7 @@ class RatingRoutesTest {
 
             val response = testClient.get(
                 urlString = """
+                    /v1
                     /rating
                     ?socialSecurityNumber=$socialSecurityNumber
                     &ratingLevel=$ratingLevel
