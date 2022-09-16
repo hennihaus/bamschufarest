@@ -14,16 +14,18 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 fun Application.configureErrorHandling() {
-    val dateTime = Clock.System.now()
-        .toLocalDateTime(
-            timeZone = TimeZone.of(
-                zoneId = environment.config.property(path = TIMEZONE).getString(),
-            ),
-        )
-        .withoutNanos()
+    val zoneId = environment.config.property(path = TIMEZONE).getString()
 
     install(StatusPages) {
         exception<Throwable> { call, throwable ->
+            val dateTime = Clock.System.now()
+                .toLocalDateTime(
+                    timeZone = TimeZone.of(
+                        zoneId = zoneId,
+                    ),
+                )
+                .withoutNanos()
+
             when (throwable) {
                 is ValidationException -> call.respond(
                     status = HttpStatusCode.BadRequest,
@@ -39,13 +41,14 @@ fun Application.configureErrorHandling() {
                         dateTime = dateTime,
                     ),
                 )
-                else -> call.respond(
-                    status = HttpStatusCode.InternalServerError,
-                    message = Error(
-                        message = "$throwable",
-                        dateTime = dateTime,
-                    ),
-                )
+                else -> call.also { it.application.environment.log.error("Internal Server Error: ", throwable) }
+                    .respond(
+                        status = HttpStatusCode.InternalServerError,
+                        message = Error(
+                            message = "$throwable",
+                            dateTime = dateTime,
+                        ),
+                    )
             }
         }
     }
