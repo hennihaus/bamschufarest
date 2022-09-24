@@ -40,6 +40,13 @@ sourceSets {
 }
 
 repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/hennihaus/bamdatamodel")
+        credentials {
+            username = "hennihaus"
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
     mavenCentral()
 }
 
@@ -62,6 +69,7 @@ dependencies {
     val kotlinDateTimeVersion: String by project
     val koinAnnotationsVersion: String by project
     val konformVersion: String by project
+    val bamdatamodelVersion: String by project
 
     // ktor common plugins
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
@@ -97,6 +105,10 @@ dependencies {
     // utility plugins
     implementation("org.jetbrains.kotlinx:kotlinx-datetime-jvm:$kotlinDateTimeVersion")
     implementation("io.konform:konform-jvm:$konformVersion")
+
+    // model plugins
+    implementation("de.hennihaus:bamdatamodel:$bamdatamodelVersion")
+    testImplementation("de.hennihaus:bamdatamodel:$bamdatamodelVersion:tests")
 
     // test plugins
     testImplementation("io.mockk:mockk:$mockkVersion")

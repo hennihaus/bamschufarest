@@ -1,43 +1,28 @@
 package de.hennihaus.services
 
-import de.hennihaus.configurations.ConfigBackendConfiguration.Companion.BANK_NAME
-import de.hennihaus.models.Group
-import de.hennihaus.services.callservices.GroupCallService
+import de.hennihaus.services.callservices.BankCallService
+import de.hennihaus.services.callservices.StatisticCallService
 import io.ktor.server.plugins.NotFoundException
-import org.koin.core.annotation.Property
 import org.koin.core.annotation.Single
 
 @Single
-class TrackingService(private val groupCall: GroupCallService, @Property(BANK_NAME) private val bankName: String) {
+class TrackingService(
+    private val bankCall: BankCallService,
+    private val statisticCall: StatisticCallService,
+) {
 
     suspend fun trackRequest(username: String, password: String) {
-        val group = groupCall.getAllGroups().find {
+        val team = bankCall.getBankById().teams.find {
             (it.username == username) and (it.password == password)
         }
-        with(group ?: throw NotFoundException(message = GROUP_NOT_FOUND_MESSAGE)) {
-            group.takeIf { it.hasBankName() }
-                ?.also {
-                    groupCall.updateGroup(
-                        id = id,
-                        group = it.updateStats(),
-                    )
-                }
-                ?: throw IllegalStateException(BANK_NOT_FOUND_MESSAGE)
+        with(team ?: throw NotFoundException(message = TEAM_NOT_FOUND_MESSAGE)) {
+            statisticCall.incrementStatistic(
+                teamId = uuid,
+            )
         }
     }
 
-    private fun Group.hasBankName(): Boolean = stats.containsKey(key = bankName)
-
-    private fun Group.updateStats(): Group = copy(
-        stats = stats.map { (bank, request) ->
-            if (bank == bankName) bank to request.plus(ONE_REQUEST)
-            else bank to request
-        }.toMap()
-    )
-
     companion object {
-        const val ONE_REQUEST = 1
-        const val GROUP_NOT_FOUND_MESSAGE = "[group not found by username and password]"
-        const val BANK_NOT_FOUND_MESSAGE = "[bankName not found]"
+        const val TEAM_NOT_FOUND_MESSAGE = "[team not found by username and password]"
     }
 }

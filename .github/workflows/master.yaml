@@ -22,6 +22,8 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.40.0
@@ -38,7 +40,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag ${{ github.repository }}:${{ steps.tag-version.outputs.new_tag }} --tag ${{ github.repository }}:latest
+        run: docker build . --file Dockerfile --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} --tag ${{ github.repository }}:${{ steps.tag-version.outputs.new_tag }} --tag ${{ github.repository }}:latest
 
       - name: Push versioned Docker Image
         run: docker push ${{ github.repository }}:${{ steps.tag-version.outputs.new_tag }}

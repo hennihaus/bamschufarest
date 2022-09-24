@@ -1,9 +1,9 @@
 package de.hennihaus.objectmothers
 
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.DEFAULT_PASSWORD
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.FIRST_TEAM_USERNAME
 import de.hennihaus.models.RatingLevel
 import de.hennihaus.models.generated.Rating
-import de.hennihaus.objectmothers.GroupObjectMother.DEFAULT_PASSWORD
-import de.hennihaus.objectmothers.GroupObjectMother.FIRST_GROUP_USERNAME
 import de.hennihaus.routes.resources.RatingResource
 
 object RatingObjectMother {
@@ -24,7 +24,7 @@ object RatingObjectMother {
         socialSecurityNumber: String? = DEFAULT_SOCIAL_SECURITY_NUMBER,
         ratingLevel: String? = RatingLevel.valueOf(value = DEFAULT_RATING_LEVEL).name,
         delayInMilliseconds: Long? = DEFAULT_DELAY_IN_MILLISECONDS,
-        username: String? = FIRST_GROUP_USERNAME,
+        username: String? = FIRST_TEAM_USERNAME,
         password: String? = DEFAULT_PASSWORD,
     ) = RatingResource(
         socialSecurityNumber = socialSecurityNumber,
