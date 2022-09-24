@@ -2,6 +2,7 @@ package de.hennihaus.services.callservices
 
 import de.hennihaus.bamdatamodel.Statistic
 import de.hennihaus.bamdatamodel.objectmothers.StatisticObjectMother.getFirstTeamAsyncBankStatistic
+import de.hennihaus.configurations.Configuration
 import de.hennihaus.plugins.initKoin
 import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
@@ -16,6 +17,7 @@ import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.junit5.KoinTestExtension
+import java.util.UUID
 
 @Disabled(value = "until dev cluster is available")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,7 +39,8 @@ class StatisticCallServiceIntegrationTest : KoinTest {
     inner class IncrementStatistic {
         @Test
         fun `should increment and return a statistic with requests greater zero`() = runBlocking<Unit> {
-            val (bankId, teamId) = getFirstTeamAsyncBankStatistic()
+            val bankId = UUID.fromString(getKoin().getProperty(key = Configuration.BANK_UUID))
+            val teamId = getFirstTeamAsyncBankStatistic().teamId
 
             val result: Statistic = classUnderTest.incrementStatistic(
                 bankId = bankId,

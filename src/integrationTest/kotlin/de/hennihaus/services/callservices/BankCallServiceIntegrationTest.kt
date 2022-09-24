@@ -1,7 +1,7 @@
 package de.hennihaus.services.callservices
 
 import de.hennihaus.bamdatamodel.Bank
-import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.SCHUFA_BANK_UUID
+import de.hennihaus.configurations.Configuration.BANK_UUID
 import de.hennihaus.plugins.initKoin
 import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlinx.coroutines.runBlocking
@@ -37,7 +37,7 @@ class BankCallServiceIntegrationTest : KoinTest {
     inner class GetBankById {
         @Test
         fun `should return a bank by id`() = runBlocking<Unit> {
-            val id = UUID.fromString(SCHUFA_BANK_UUID)
+            val id = UUID.fromString(getKoin().getProperty(key = BANK_UUID))
 
             val result: Bank = classUnderTest.getBankById(
                 id = id,
