@@ -8,6 +8,7 @@ import de.hennihaus.testutils.MockEngineBuilder.getMockEngine
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.shouldBe
+import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.http.ContentType
@@ -23,33 +24,46 @@ import org.junit.jupiter.api.Test
 
 class BankCallServiceTest {
 
+    private val config = getConfigBackendConfiguration()
+    private val defaultBankId = getSchufaBank().uuid
+
+    private lateinit var engine: MockEngine
     private lateinit var classUnderTest: BankCallService
 
     @Nested
     inner class GetBankById {
         @Test
         fun `should return a bank by id and build call correctly`() = runBlocking {
-            val id = getSchufaBank().uuid
-            val (protocol, host, port, apiVersion) = getConfigBackendConfiguration()
-            val engine = getMockEngine(
+            engine = getMockEngine(
                 content = Json.encodeToString(
                     value = getSchufaBank(),
                 ),
                 assertions = {
                     it.method shouldBe HttpMethod.Get
                     it.url shouldBe Url(
-                        urlString = "$protocol://$host:$port/$apiVersion$BANKS_PATH/$id",
+                        urlString = buildString {
+                            append(config.protocol)
+                            append("://")
+                            append(config.host)
+                            append(":")
+                            append(config.port)
+                            append("/")
+                            append(config.apiVersion)
+                            append(BANKS_PATH)
+                            append("/")
+                            append(defaultBankId)
+                        },
                     )
                     it.headers[HttpHeaders.Accept] shouldBe "${ContentType.Application.Json}"
-                    // it.body shouldBe getSchufaBank().toBody()
                 },
             )
             classUnderTest = BankCallService(
+                defaultBankId = "$defaultBankId",
                 engine = engine,
-                config = getConfigBackendConfiguration(),
+                config = config,
             )
 
-            val result: Bank = classUnderTest.getBankById(id = id)
+            val result: Bank = classUnderTest.getBankById()
 
             result shouldBe getSchufaBank()
         }
@@ -57,18 +71,18 @@ class BankCallServiceTest {
         @Test
         fun `should throw an exception and request one time when bad request error occurs`() = runBlocking {
             var counter = 0
-            val id = getSchufaBank().uuid
-            val engine = getMockEngine(
+            engine = getMockEngine(
                 status = HttpStatusCode.BadRequest,
                 assertions = { counter++ },
             )
             classUnderTest = BankCallService(
+                defaultBankId = "$defaultBankId",
                 engine = engine,
-                config = getConfigBackendConfiguration(),
+                config = config,
             )
 
             val result = shouldThrowExactly<ClientRequestException> {
-                classUnderTest.getBankById(id = id)
+                classUnderTest.getBankById()
             }
 
             result.response shouldHaveStatus HttpStatusCode.BadRequest
@@ -78,20 +92,20 @@ class BankCallServiceTest {
         @Test
         fun `should throw an exception and request three times when internal server error occurs`() = runBlocking {
             var counter = 0
-            val id = getSchufaBank().uuid
-            val engine = getMockEngine(
+            engine = getMockEngine(
                 status = HttpStatusCode.InternalServerError,
                 assertions = { counter++ },
             )
             classUnderTest = BankCallService(
+                defaultBankId = "$defaultBankId",
                 engine = engine,
-                config = getConfigBackendConfiguration(
+                config = config.copy(
                     maxRetries = 2,
                 ),
             )
 
             val result = shouldThrowExactly<ServerResponseException> {
-                classUnderTest.getBankById(id = id)
+                classUnderTest.getBankById()
             }
 
             result.response shouldHaveStatus HttpStatusCode.InternalServerError

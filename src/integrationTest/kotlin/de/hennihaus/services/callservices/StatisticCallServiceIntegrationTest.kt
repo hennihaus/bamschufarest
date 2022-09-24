@@ -2,7 +2,7 @@ package de.hennihaus.services.callservices
 
 import de.hennihaus.bamdatamodel.Statistic
 import de.hennihaus.bamdatamodel.objectmothers.StatisticObjectMother.getFirstTeamAsyncBankStatistic
-import de.hennihaus.configurations.Configuration
+import de.hennihaus.configurations.Configuration.BANK_UUID
 import de.hennihaus.plugins.initKoin
 import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
 import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
@@ -39,7 +39,7 @@ class StatisticCallServiceIntegrationTest : KoinTest {
     inner class IncrementStatistic {
         @Test
         fun `should increment and return a statistic with requests greater zero`() = runBlocking<Unit> {
-            val bankId = UUID.fromString(getKoin().getProperty(key = Configuration.BANK_UUID))
+            val bankId = UUID.fromString(getKoin().getProperty(key = BANK_UUID))
             val teamId = getFirstTeamAsyncBankStatistic().teamId
 
             val result: Statistic = classUnderTest.incrementStatistic(
@@ -48,7 +48,9 @@ class StatisticCallServiceIntegrationTest : KoinTest {
             )
 
             result.shouldBeEqualToIgnoringFields(
-                other = getFirstTeamAsyncBankStatistic(),
+                other = getFirstTeamAsyncBankStatistic(
+                    bankId = bankId,
+                ),
                 property = Statistic::requestsCount,
             )
             result.requestsCount!! shouldBeGreaterThanOrEqual 1L

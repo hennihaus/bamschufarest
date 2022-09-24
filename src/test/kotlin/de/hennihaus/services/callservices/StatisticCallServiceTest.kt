@@ -9,6 +9,7 @@ import de.hennihaus.testutils.MockEngineBuilder.getMockEngine
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.shouldBe
+import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.http.ContentType
@@ -24,36 +25,48 @@ import org.junit.jupiter.api.Test
 
 class StatisticCallServiceTest {
 
+    private val config = getConfigBackendConfiguration()
+    private val defaultBankId = getFirstTeamAsyncBankStatistic().bankId
+
+    private lateinit var engine: MockEngine
     private lateinit var classUnderTest: StatisticCallService
 
     @Nested
     inner class IncrementStatistic {
         @Test
         fun `should increment and return a statistic and build call correctly`() = runBlocking {
-            val (bankId, teamId) = getFirstTeamAsyncBankStatistic()
-            val (protocol, host, port, apiVersion) = getConfigBackendConfiguration()
-            val engine = getMockEngine(
+            val teamId = getFirstTeamAsyncBankStatistic().teamId
+            engine = getMockEngine(
                 content = Json.encodeToString(
                     value = getFirstTeamAsyncBankStatistic(
-                        requestsCount = 1L
+                        requestsCount = 1L,
                     ),
                 ),
                 assertions = {
                     it.method shouldBe HttpMethod.Patch
                     it.url shouldBe Url(
-                        urlString = "$protocol://$host:$port/$apiVersion$STATISTICS_PATH$INCREMENT_PATH",
+                        urlString = buildString {
+                            append(config.protocol)
+                            append("://")
+                            append(config.host)
+                            append(":")
+                            append(config.port)
+                            append("/")
+                            append(config.apiVersion)
+                            append(STATISTICS_PATH)
+                            append(INCREMENT_PATH)
+                        },
                     )
                     it.headers[HttpHeaders.Accept] shouldBe "${ContentType.Application.Json}"
-                    // it.body shouldBe getFirstTeamAsyncBankStatistic().toBody()
                 },
             )
             classUnderTest = StatisticCallService(
+                defaultBankId = "$defaultBankId",
                 engine = engine,
-                config = getConfigBackendConfiguration(),
+                config = config,
             )
 
             val result: Statistic = classUnderTest.incrementStatistic(
-                bankId = bankId,
                 teamId = teamId,
             )
 
@@ -63,19 +76,19 @@ class StatisticCallServiceTest {
         @Test
         fun `should throw an exception and request one time when bad request error occurs`() = runBlocking {
             var counter = 0
-            val (bankId, teamId) = getFirstTeamAsyncBankStatistic()
-            val engine = getMockEngine(
+            val teamId = getFirstTeamAsyncBankStatistic().teamId
+            engine = getMockEngine(
                 status = HttpStatusCode.BadRequest,
                 assertions = { counter++ },
             )
             classUnderTest = StatisticCallService(
+                defaultBankId = "$defaultBankId",
                 engine = engine,
-                config = getConfigBackendConfiguration(),
+                config = config,
             )
 
             val result = shouldThrowExactly<ClientRequestException> {
                 classUnderTest.incrementStatistic(
-                    bankId = bankId,
                     teamId = teamId,
                 )
             }
@@ -87,21 +100,21 @@ class StatisticCallServiceTest {
         @Test
         fun `should throw an exception and request three times when internal server error occurs`() = runBlocking {
             var counter = 0
-            val (bankId, teamId) = getFirstTeamAsyncBankStatistic()
-            val engine = getMockEngine(
+            val teamId = getFirstTeamAsyncBankStatistic().teamId
+            engine = getMockEngine(
                 status = HttpStatusCode.InternalServerError,
                 assertions = { counter++ },
             )
             classUnderTest = StatisticCallService(
+                defaultBankId = "$defaultBankId",
                 engine = engine,
-                config = getConfigBackendConfiguration(
+                config = config.copy(
                     maxRetries = 2,
                 ),
             )
 
             val result = shouldThrowExactly<ServerResponseException> {
                 classUnderTest.incrementStatistic(
-                    bankId = bankId,
                     teamId = teamId,
                 )
             }
