@@ -2,6 +2,7 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import kotlinx.kover.api.CounterType
 import kotlinx.kover.api.DefaultIntellijEngine
 import kotlinx.kover.api.VerificationValueType
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
@@ -189,6 +190,12 @@ testing {
                 }
             }
         }
+    }
+}
+
+tasks.withType(Test::class) {
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
