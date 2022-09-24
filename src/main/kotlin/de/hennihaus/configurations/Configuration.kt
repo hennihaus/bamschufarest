@@ -15,6 +15,8 @@ val defaultModule = module {
 object Configuration {
     const val DEFAULT_CONFIG_FILE = "application.conf"
 
+    const val BANK_UUID = "bank.uuid"
+
     const val ALLOWED_PROTOCOL = "ktor.cors.allowedProtocol"
     const val ALLOWED_HOST = "ktor.cors.allowedHost"
     const val TIMEZONE = "ktor.application.timezone"

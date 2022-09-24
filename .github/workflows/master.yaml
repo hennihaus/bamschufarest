@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag ${{ github.repository }}:${{ steps.tag-version.outputs.new_tag }} --tag ${{ github.repository }}:latest
+        run: docker build . --file Dockerfile --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} --tag ${{ github.repository }}:${{ steps.tag-version.outputs.new_tag }} --tag ${{ github.repository }}:latest
 
       - name: Push versioned Docker Image
         run: docker push ${{ github.repository }}:${{ steps.tag-version.outputs.new_tag }}

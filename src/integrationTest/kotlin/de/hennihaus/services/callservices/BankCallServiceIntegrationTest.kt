@@ -1,10 +1,9 @@
 package de.hennihaus.services.callservices
 
-import de.hennihaus.models.Group
-import de.hennihaus.objectmothers.GroupObjectMother
+import de.hennihaus.bamdatamodel.Bank
+import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.SCHUFA_BANK_UUID
 import de.hennihaus.plugins.initKoin
-import io.kotest.matchers.collections.shouldNotBeEmpty
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.nulls.shouldNotBeNull
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Disabled
@@ -16,12 +15,13 @@ import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.junit5.KoinTestExtension
+import java.util.UUID
 
 @Disabled(value = "until dev cluster is available")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class GroupCallServiceIntegrationTest : KoinTest {
+class BankCallServiceIntegrationTest : KoinTest {
 
-    private val classUnderTest: GroupCallService by inject()
+    private val classUnderTest: BankCallService by inject()
 
     @JvmField
     @RegisterExtension
@@ -34,28 +34,16 @@ class GroupCallServiceIntegrationTest : KoinTest {
     fun cleanUp() = stopKoin()
 
     @Nested
-    inner class GetAllGroups {
+    inner class GetBankById {
         @Test
-        fun `should return at least one group`() = runBlocking<Unit> {
+        fun `should return a bank by id`() = runBlocking<Unit> {
+            val id = UUID.fromString(SCHUFA_BANK_UUID)
 
-            val result: List<Group> = classUnderTest.getAllGroups()
-
-            result.shouldNotBeEmpty()
-        }
-    }
-
-    @Nested
-    inner class UpdateGroup {
-        @Test
-        fun `should return an updated group`() = runBlocking {
-            val group = GroupObjectMother.getFirstGroup()
-
-            val result: Group = classUnderTest.updateGroup(
-                id = group.id,
-                group = group,
+            val result: Bank = classUnderTest.getBankById(
+                id = id,
             )
 
-            result shouldBe group
+            result.shouldNotBeNull()
         }
     }
 }

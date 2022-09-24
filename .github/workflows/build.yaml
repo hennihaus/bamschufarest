@@ -21,4 +21,4 @@ jobs:
         run: ./gradlew build --no-daemon
 
       - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag ${{ github.repository }}:latest
+        run: docker build . --file Dockerfile --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} --tag ${{ github.repository }}:latest

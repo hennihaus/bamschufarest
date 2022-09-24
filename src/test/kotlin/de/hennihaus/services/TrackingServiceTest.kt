@@ -1,13 +1,13 @@
 package de.hennihaus.services
 
-import de.hennihaus.objectmothers.GroupObjectMother
-import de.hennihaus.objectmothers.GroupObjectMother.getFirstGroup
-import de.hennihaus.objectmothers.GroupObjectMother.getSecondGroup
-import de.hennihaus.objectmothers.GroupObjectMother.getThirdGroup
-import de.hennihaus.services.TrackingService.Companion.BANK_NOT_FOUND_MESSAGE
-import de.hennihaus.services.TrackingService.Companion.GROUP_NOT_FOUND_MESSAGE
-import de.hennihaus.services.callservices.GroupCallService
+import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.SCHUFA_BANK_UUID
+import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.getSchufaBank
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getFirstTeam
+import de.hennihaus.services.TrackingService.Companion.TEAM_NOT_FOUND_MESSAGE
+import de.hennihaus.services.callservices.BankCallService
+import de.hennihaus.services.callservices.StatisticCallService
 import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.common.runBlocking
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.ktor.server.plugins.NotFoundException
 import io.mockk.clearAllMocks
@@ -15,150 +15,140 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifySequence
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class TrackingServiceTest {
 
-    private lateinit var groupCall: GroupCallService
-    private lateinit var bankName: String
+    private val bankId = UUID.fromString(SCHUFA_BANK_UUID)
+    private val bankCall = mockk<BankCallService>()
+    private val statisticCall = mockk<StatisticCallService>()
 
-    private lateinit var classUnderTest: TrackingService
+    private val classUnderTest = TrackingService(
+        bankId = "$bankId",
+        bankCall = bankCall,
+        statisticCall = statisticCall,
+    )
 
     @BeforeEach
     fun init() = clearAllMocks()
 
     @Nested
     inner class TrackRequest {
-
-        @BeforeEach
-        fun init() {
-            groupCall = mockk()
-            bankName = GroupObjectMother.DEFAULT_JMS_BANK_A_NAME
-            classUnderTest = TrackingService(
-                groupCall = groupCall,
-                bankName = bankName,
-            )
-
-            // default behavior
-            coEvery { groupCall.getAllGroups() } returns listOf(
-                getFirstGroup(),
-                getSecondGroup(),
-                getThirdGroup(),
-            )
-            coEvery { groupCall.updateGroup(id = any(), group = any()) } returns mockk()
-        }
-
         @Test
-        fun `should pass raised stats correctly when username, password and bank available`() = runBlocking {
-            val (id, username, password, _, _, stats) = getThirdGroup()
+        fun `should call increment statistic with teamId when username and password in bank teams`() = runBlocking {
+            val (teamId, username, password) = getFirstTeam()
+            coEvery { bankCall.getBankById(id = any()) } returns getSchufaBank()
+            coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } returns mockk()
 
-            classUnderTest.trackRequest(username = username, password = password)
+            classUnderTest.trackRequest(
+                username = username,
+                password = password,
+            )
 
             coVerifySequence {
-                groupCall.getAllGroups()
-                groupCall.updateGroup(
-                    id = id,
-                    group = getThirdGroup().copy(
-                        stats = stats + Pair(
-                            first = bankName,
-                            second = stats[bankName]!! + 1,
-                        ),
-                    ),
+                bankCall.getBankById(
+                    id = bankId
+                )
+                statisticCall.incrementStatistic(
+                    teamId = teamId,
+                    bankId = bankId,
                 )
             }
         }
 
         @Test
-        fun `should throw an exception when zero groups are available`() = runBlocking {
-            val (_, username, password) = getThirdGroup()
-            coEvery { groupCall.getAllGroups() } returns emptyList()
+        fun `should throw an exception and not increment statistic when bank has zero teams`() = runBlocking {
+            val (_, username, password) = getFirstTeam()
+            coEvery { bankCall.getBankById(id = any()) } returns getSchufaBank(teams = emptyList())
 
-            val result: NotFoundException = shouldThrowExactly {
+            val result = shouldThrowExactly<NotFoundException> {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
                 )
             }
 
-            result shouldHaveMessage GROUP_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { groupCall.getAllGroups() }
-            coVerify(exactly = 0) { groupCall.updateGroup(id = any(), group = any()) }
+            result shouldHaveMessage TEAM_NOT_FOUND_MESSAGE
+            coVerify(exactly = 1) { bankCall.getBankById(id = bankId) }
+            coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
         @Test
-        fun `should throw an exception and not update stats when username is unknown`() = runBlocking {
+        fun `should throw an exception and not increment statistic when username is unknown`() = runBlocking {
             val username = "unknown"
-            val password = getThirdGroup().password
+            val password = getFirstTeam().password
+            coEvery { bankCall.getBankById(id = any()) } returns getSchufaBank(teams = emptyList())
 
-            val result: NotFoundException = shouldThrowExactly {
+            val result = shouldThrowExactly<NotFoundException> {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
                 )
             }
 
-            result shouldHaveMessage GROUP_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { groupCall.getAllGroups() }
-            coVerify(exactly = 0) { groupCall.updateGroup(id = any(), group = any()) }
+            result shouldHaveMessage TEAM_NOT_FOUND_MESSAGE
+            coVerify(exactly = 1) { bankCall.getBankById(id = bankId) }
+            coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
         @Test
-        fun `should throw an exception and not update stats when password is unknown`() = runBlocking {
-            val username = getThirdGroup().username
+        fun `should throw an exception and not increment statistic when password is unknown`() = runBlocking {
+            val username = getFirstTeam().username
             val password = "unknown"
+            coEvery { bankCall.getBankById(id = any()) } returns getSchufaBank(teams = emptyList())
 
-            val result: NotFoundException = shouldThrowExactly {
+            val result = shouldThrowExactly<NotFoundException> {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
                 )
             }
 
-            result shouldHaveMessage GROUP_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { groupCall.getAllGroups() }
-            coVerify(exactly = 0) { groupCall.updateGroup(id = any(), group = any()) }
+            result shouldHaveMessage TEAM_NOT_FOUND_MESSAGE
+            coVerify(exactly = 1) { bankCall.getBankById(id = bankId) }
+            coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
         @Test
-        fun `should throw an exception and not update stats when bankName is unknown`() = runBlocking {
-            val (_, username, password) = getThirdGroup()
-            bankName = "unknown"
-            classUnderTest = TrackingService(
-                groupCall = groupCall,
-                bankName = bankName,
-            )
+        fun `should throw an exception when error occurs while bank call`() = runBlocking {
+            val (_, username, password) = getFirstTeam()
+            coEvery { bankCall.getBankById(id = any()) } throws Exception()
 
-            val result: IllegalStateException = shouldThrowExactly {
+            shouldThrowExactly<Exception> {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
                 )
             }
 
-            result shouldHaveMessage BANK_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { groupCall.getAllGroups() }
-            coVerify(exactly = 0) { groupCall.updateGroup(id = any(), group = any()) }
+            coVerify(exactly = 1) { bankCall.getBankById(id = bankId) }
+            coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
         @Test
-        fun `should throw an exception when error in groupCall occurs`() = runBlocking {
-            val (_, username, password, _, _, _) = getThirdGroup()
-            coEvery { groupCall.updateGroup(id = any(), group = any()) } throws Exception("")
+        fun `should throw an exception when error occurs while statistic call`() = runBlocking {
+            val (teamId, username, password) = getFirstTeam()
+            coEvery { bankCall.getBankById(id = any()) } returns getSchufaBank()
+            coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } throws Exception()
 
-            val result: Exception = shouldThrowExactly {
+            shouldThrowExactly<Exception> {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
                 )
             }
 
-            result shouldHaveMessage ""
             coVerifySequence {
-                groupCall.getAllGroups()
-                groupCall.updateGroup(id = any(), group = any())
+                bankCall.getBankById(
+                    id = bankId
+                )
+                statisticCall.incrementStatistic(
+                    teamId = teamId,
+                    bankId = bankId,
+                )
             }
         }
     }

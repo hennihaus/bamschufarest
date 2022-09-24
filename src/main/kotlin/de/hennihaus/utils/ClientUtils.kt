@@ -13,6 +13,7 @@ import io.ktor.client.request.headers
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
+import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
 import kotlinx.serialization.json.Json
@@ -39,12 +40,21 @@ fun HttpClientConfig<*>.configureSerialization() {
     install(plugin = Resources)
 }
 
-fun HttpClientConfig<*>.configureDefaultRequests(protocol: String, host: String, port: Int) {
+fun HttpClientConfig<*>.configureDefaultRequests(
+    protocol: String,
+    host: String,
+    port: Int,
+    apiVersion: String? = null,
+) {
     install(plugin = DefaultRequest) {
         url {
             this.protocol = URLProtocol.createOrDefault(name = protocol)
             this.host = host
             this.port = port
+
+            apiVersion?.let {
+                path("$it/")
+            }
         }
         headers {
             appendIfNameAbsent(name = HttpHeaders.ContentType, value = "${ContentType.Application.Json}")
