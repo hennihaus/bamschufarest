@@ -1,9 +1,10 @@
 package de.hennihaus.services.callservices
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.hennihaus.bamdatamodel.Bank
 import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.getSchufaBank
 import de.hennihaus.objectmothers.ConfigurationObjectMother.getConfigBackendConfiguration
-import de.hennihaus.services.callservices.resources.BankPaths.BANKS_PATH
+import de.hennihaus.services.callservices.paths.ConfigBackendPaths.BANKS_PATH
 import de.hennihaus.testutils.MockEngineBuilder.getMockEngine
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.throwables.shouldThrowExactly
@@ -17,8 +18,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -35,9 +34,7 @@ class BankCallServiceTest {
         @Test
         fun `should return a bank by id and build call correctly`() = runBlocking {
             engine = getMockEngine(
-                content = Json.encodeToString(
-                    value = getSchufaBank(),
-                ),
+                content = jacksonObjectMapper().writeValueAsString(getSchufaBank()),
                 assertions = {
                     it.method shouldBe HttpMethod.Get
                     it.url shouldBe Url(
@@ -49,6 +46,7 @@ class BankCallServiceTest {
                             append(config.port)
                             append("/")
                             append(config.apiVersion)
+                            append("/")
                             append(BANKS_PATH)
                             append("/")
                             append(defaultBankId)

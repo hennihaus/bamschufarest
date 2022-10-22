@@ -1,10 +1,11 @@
 package de.hennihaus.services.callservices
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import de.hennihaus.bamdatamodel.Statistic
 import de.hennihaus.bamdatamodel.objectmothers.StatisticObjectMother.getFirstTeamAsyncBankStatistic
 import de.hennihaus.objectmothers.ConfigurationObjectMother.getConfigBackendConfiguration
-import de.hennihaus.services.callservices.resources.StatisticPaths.INCREMENT_PATH
-import de.hennihaus.services.callservices.resources.StatisticPaths.STATISTICS_PATH
+import de.hennihaus.services.callservices.paths.ConfigBackendPaths.INCREMENT_PATH
+import de.hennihaus.services.callservices.paths.ConfigBackendPaths.STATISTICS_PATH
 import de.hennihaus.testutils.MockEngineBuilder.getMockEngine
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.throwables.shouldThrowExactly
@@ -18,8 +19,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -37,8 +36,8 @@ class StatisticCallServiceTest {
         fun `should increment and return a statistic and build call correctly`() = runBlocking {
             val teamId = getFirstTeamAsyncBankStatistic().teamId
             engine = getMockEngine(
-                content = Json.encodeToString(
-                    value = getFirstTeamAsyncBankStatistic(
+                content = jacksonObjectMapper().writeValueAsString(
+                    getFirstTeamAsyncBankStatistic(
                         requestsCount = 1L,
                     ),
                 ),
@@ -53,7 +52,9 @@ class StatisticCallServiceTest {
                             append(config.port)
                             append("/")
                             append(config.apiVersion)
+                            append("/")
                             append(STATISTICS_PATH)
+                            append("/")
                             append(INCREMENT_PATH)
                         },
                     )

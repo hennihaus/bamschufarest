@@ -11,7 +11,8 @@ import io.ktor.server.plugins.cors.routing.CORS
 fun Application.configureCors() {
     val allowedProtocol = environment.config.property(path = ALLOWED_PROTOCOL).getString()
     val allowedHost = environment.config.property(path = ALLOWED_HOST).getString()
-    install(CORS) {
+
+    install(plugin = CORS) {
         allowHost(host = allowedHost, schemes = listOf(allowedProtocol))
 
         allowHeader(header = HttpHeaders.ContentType)

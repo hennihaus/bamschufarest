@@ -1,12 +1,15 @@
 package de.hennihaus.testutils
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import de.hennihaus.module
+import io.kotest.extensions.time.withConstantNow
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.serialization.jackson.jackson
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.ApplicationTestBuilder
-import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
+import java.time.ZonedDateTime
 import io.ktor.server.testing.testApplication as ktorTestApplication
 
 object KtorTestBuilder {
@@ -24,7 +27,9 @@ object KtorTestBuilder {
                     koinModules = mockModules,
                 )
             }
-            block()
+            withConstantNow(now = ZonedDateTime.now()) {
+                block()
+            }
         }
     }
 }
@@ -32,6 +37,9 @@ object KtorTestBuilder {
 val ApplicationTestBuilder.testClient
     get() = createClient {
         install(plugin = ContentNegotiation) {
-            json(json = Json)
+            jackson {
+                disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
+                registerModules(JavaTimeModule())
+            }
         }
     }

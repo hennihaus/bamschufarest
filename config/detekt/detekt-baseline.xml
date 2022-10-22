@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <SmellBaseline>
     <ManuallySuppressedIssues>
-        <ID>MaxLineLength:RatingResourceServiceTest.kt$RatingResourceServiceTest.Validate$result shouldHaveMessage "[ratingLevel must be one of: 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'O', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n', 'o', 'p']"</ID>
+        <ID>MaxLineLength:RatingValidationServiceTest.kt$RatingValidationServiceTest.ValidateUrl$"ratingLevel must be one of: 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'O', 'P', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'n', 'o', 'p'"</ID>
     </ManuallySuppressedIssues>
     <!-- Current Issues should be empty -->
     <CurrentIssues/>
