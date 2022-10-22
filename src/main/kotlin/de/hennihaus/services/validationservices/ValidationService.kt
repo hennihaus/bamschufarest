@@ -15,7 +15,7 @@ interface ValidationService<Resource> {
             throw RequestValidationException(
                 reasons = result.errors.map {
                     "${it.dataPath.substringAfter(delimiter = ".")} ${it.message}"
-                }
+                },
             )
         }
     }
