@@ -267,6 +267,7 @@
         }
       },
       "Reason": {
+        "type": "object",
         "required": [
           "exception",
           "message"
