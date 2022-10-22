@@ -158,7 +158,7 @@ class RatingRoutesTest {
         }
 
         @Test
-        fun `should return 400 and error when password and validation is missing`() = testApplicationWith(mockModule) {
+        fun `should return 400 and error when password and validation are missing`() = testApplicationWith(mockModule) {
             val (
                 socialSecurityNumber,
                 ratingLevel,
