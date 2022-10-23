@@ -8,7 +8,6 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
     application
     kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.serialization")
     id("org.jlleitschuh.gradle.ktlint")
     id("org.jetbrains.kotlinx.kover")
     id("com.google.devtools.ksp")
@@ -34,7 +33,7 @@ sourceSets {
     main {
         java.srcDirs(
             "build/generated/ksp/main/kotlin",
-            "build/generated/openapi/main/kotlin",
+            "build/generated/openapi/src/main/kotlin",
         )
     }
 }
@@ -66,13 +65,12 @@ dependencies {
     val mockkVersion: String by project
     val junitVersion: String by project
     val koinVersion: String by project
-    val kotlinDateTimeVersion: String by project
     val koinAnnotationsVersion: String by project
     val konformVersion: String by project
     val bamdatamodelVersion: String by project
 
     // ktor common plugins
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     // ktor server plugins
@@ -80,7 +78,6 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-resources-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cio-jvm:$ktorVersion")
@@ -90,7 +87,6 @@ dependencies {
     implementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-client-resources-jvm:$ktorVersion")
     implementation("io.ktor:ktor-client-logging-jvm:$ktorVersion")
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
 
@@ -103,7 +99,6 @@ dependencies {
     testImplementation("io.insert-koin:koin-test-junit5:$koinVersion")
 
     // utility plugins
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime-jvm:$kotlinDateTimeVersion")
     implementation("io.konform:konform-jvm:$konformVersion")
 
     // model plugins
@@ -114,8 +109,8 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-property-jvm:$kotestVersion")
+    testImplementation("io.kotest:kotest-extensions-jvm:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-ktor-jvm:$kotestLibariesVersion")
-    testImplementation("io.kotest:kotest-assertions-kotlinx-time-jvm:$kotestLibariesVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
@@ -125,11 +120,11 @@ val generateRatingModel by tasks.registering(GenerateTask::class) {
     outputDir.set("$buildDir/generated/openapi")
     inputSpec.set("$projectDir/docs/rating.json")
     configFile.set("$projectDir/docs/config.json")
-    globalProperties.set(mapOf("models" to "Error,Rating", "modelDocs" to "false", "apis" to "false"))
+    globalProperties.set(mapOf("models" to "Errors,Reason,Rating", "modelDocs" to "false", "apis" to "false"))
     modelPackage.set("de.hennihaus.models.generated")
     skipValidateSpec.set(false)
-    typeMappings.set(mapOf("string+date-time" to "KotlinxDateTime"))
-    importMappings.set(mapOf("KotlinxDateTime" to "kotlinx.datetime.LocalDateTime"))
+    typeMappings.set(mapOf("string+date-time" to "ZonedDateTime"))
+    importMappings.set(mapOf("ZonedDateTime" to "java.time.ZonedDateTime"))
 }
 
 ktlint {

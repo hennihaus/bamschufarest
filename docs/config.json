@@ -2,9 +2,11 @@
   "collectionType": "list",
   "dateLibrary": "java8",
   "enumPropertyNaming": "UPPERCASE",
-  "library": "multiplatform",
+  "library": "jvm-ktor",
+  "serializationLibrary": "jackson",
+  "sortModelPropertiesByRequiredFlag": false,
   "modelMutable": false,
   "requestDateConverter": "toString",
   "serializableModel": false,
-  "sourceFolder": "main/kotlin"
+  "sourceFolder": "src/main/kotlin"
 }

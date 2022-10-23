@@ -9,7 +9,6 @@ pluginManagement {
 
     plugins {
         kotlin("jvm") version kotlinVersion
-        id("org.jetbrains.kotlin.plugin.serialization") version kotlinVersion
         id("org.jlleitschuh.gradle.ktlint") version ktLintVersion
         id("com.google.devtools.ksp") version kotlinSymbolProcessingVersion
         id("org.jetbrains.kotlinx.kover") version koverVersion

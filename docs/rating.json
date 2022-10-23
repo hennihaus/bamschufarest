@@ -6,7 +6,7 @@
       "name": "Jan-Hendrik Hausner",
       "email": "jan-hendrik.hausner@outlook.com"
     },
-    "description": "<p>Die Schufa ist ein WebService, welcher eine virtuelle Schufa darstellt. Dieser Service ist sowohl als SOAP-Service als auch als REST-Service erreichbar. Die Eingabeparameter entnehmen Sie der Parameterliste. Als Antwort liefert der WebService anschließend ein zufälliges Rating in Form des Schufa Score-Wertes (\"rating\", als int zwischen 0 und 9.999,) und eine Ausfallwahrscheinlichkeit &nbsp;( “failureRiskInPercent” als double) . Um die Anwendung trotz Zufallswerte entsprechend testen zu können, muss auch übergeben werden, welche Ratingstufe (A bis P) gewünscht ist.</p>",
+    "description": "<p>Die Schufa ist ein WebService, welcher eine virtuelle Schufa darstellt. Dieser Service ist als REST-Service erreichbar. Die Eingabeparameter entnehmen Sie der Parameterliste. Als Antwort liefert der WebService anschließend ein zufälliges Rating in Form des Schufa Score-Wertes (\"rating\", als int zwischen 0 und 9.999,) und eine Ausfallwahrscheinlichkeit &nbsp;( “failureRiskInPercent” als double) . Um die Anwendung trotz Zufallswerte entsprechend testen zu können, muss auch übergeben werden, welche Ratingstufe (A bis P) gewünscht ist.</p>",
     "license": {
       "name": "Apache 2.0",
       "url": "https://github.com/hennihaus/bamschufarest/blob/master/LICENSE"
@@ -74,7 +74,8 @@
         "required": true,
         "example": "12123456M123",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       },
       "ratingLevel": {
@@ -95,7 +96,8 @@
         "example": "0",
         "schema": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "minimum": 0
         }
       },
       "username": {
@@ -105,7 +107,9 @@
         "required": true,
         "example": "Beispielteam",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 50
         }
       },
       "password": {
@@ -116,7 +120,9 @@
         "example": "OOfKqWksmA",
         "schema": {
           "type": "string",
-          "format": "password"
+          "format": "password",
+          "minLength": 8,
+          "maxLength": 50
         }
       }
     },
@@ -140,10 +146,19 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "$ref": "#/components/schemas/Errors"
             },
             "example": {
-              "message": "[username is required, password is required]",
+              "reasons": [
+                {
+                  "exception": "RequestValidationException",
+                  "message": "username is required"
+                },
+                {
+                  "exception": "RequestValidationException",
+                  "message": "password is required"
+                }
+              ],
               "dateTime": "2022-01-31T07:43:30"
             }
           }
@@ -154,10 +169,15 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "$ref": "#/components/schemas/Errors"
             },
             "example": {
-              "message": "[team not found by username and password]",
+              "reasons": [
+                {
+                  "exception": "NotFoundException",
+                  "message": "team not found by username and password"
+                }
+              ],
               "dateTime": "2022-01-31T07:43:30"
             }
           }
@@ -168,10 +188,15 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "$ref": "#/components/schemas/Errors"
             },
             "example": {
-              "message": "[kotlin.Exception: Internal server error]",
+              "reasons": [
+                {
+                  "exception": "Exception",
+                  "message": "internal server error"
+                }
+              ],
               "dateTime": "2022-01-31T07:43:30"
             }
           }
@@ -220,19 +245,41 @@
           }
         }
       },
-      "Error": {
+      "Errors": {
         "type": "object",
         "required": [
-          "message",
+          "reasons",
           "dateTime"
         ],
         "properties": {
-          "message": {
-            "type": "string"
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            },
+            "minItems": 1,
+            "uniqueItems": true
           },
           "dateTime": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "Reason": {
+        "type": "object",
+        "required": [
+          "exception",
+          "message"
+        ],
+        "properties": {
+          "exception": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }

@@ -23,6 +23,6 @@ class TrackingService(
     }
 
     companion object {
-        const val TEAM_NOT_FOUND_MESSAGE = "[team not found by username and password]"
+        const val TEAM_NOT_FOUND_MESSAGE = "team not found by username and password"
     }
 }
