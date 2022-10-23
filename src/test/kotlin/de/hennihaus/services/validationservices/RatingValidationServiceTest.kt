@@ -147,9 +147,9 @@ class RatingValidationServiceTest {
         }
 
         @Test
-        fun `should throw an exception with one reason when delayInMilliseconds is not long`() = runBlocking {
+        fun `should throw an exception with one reason when delayInMilliseconds is no number`() = runBlocking {
             val resource = getMinValidRatingResource(
-                delayInMilliseconds = "no long",
+                delayInMilliseconds = "no number",
             )
 
             val result = shouldThrowExactly<RequestValidationException> {

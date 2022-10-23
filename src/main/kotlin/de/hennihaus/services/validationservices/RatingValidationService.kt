@@ -20,7 +20,7 @@ class RatingValidationService : ValidationService<RatingResource> {
             enumIgnoreCase<RatingLevel>()
         }
         RatingResource::delayInMilliseconds required {
-            longType()
+            numberType()
         }
         RatingResource::username required {
             minLength(length = USERNAME_MIN_LENGTH)
@@ -50,7 +50,7 @@ class RatingValidationService : ValidationService<RatingResource> {
         }
     }
 
-    private fun ValidationBuilder<String>.longType() = addConstraint(
+    private fun ValidationBuilder<String>.numberType() = addConstraint(
         errorMessage = "must be a number",
     ) {
         it.toLongOrNull() is Long
