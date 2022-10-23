@@ -160,7 +160,7 @@ class RatingValidationServiceTest {
 
             result shouldBe RequestValidationException(
                 reasons = listOf(
-                    "delayInMilliseconds must be a number",
+                    "delayInMilliseconds must be a whole number",
                 ),
             )
         }

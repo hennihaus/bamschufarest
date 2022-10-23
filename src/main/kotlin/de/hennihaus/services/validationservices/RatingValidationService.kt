@@ -51,9 +51,9 @@ class RatingValidationService : ValidationService<RatingResource> {
     }
 
     private fun ValidationBuilder<String>.numberType() = addConstraint(
-        errorMessage = "must be a number",
+        errorMessage = "must be a whole number",
     ) {
-        it.toLongOrNull() is Long
+        it.all { character -> character.isDigit() }
     }
 
     companion object {
