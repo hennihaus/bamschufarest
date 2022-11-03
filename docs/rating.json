@@ -152,10 +152,6 @@
               "reasons": [
                 {
                   "exception": "RequestValidationException",
-                  "message": "username is required"
-                },
-                {
-                  "exception": "RequestValidationException",
                   "message": "password is required"
                 }
               ],
