@@ -1,6 +1,7 @@
 package de.hennihaus.utils
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpRequestRetry
@@ -30,6 +31,7 @@ fun HttpClientConfig<*>.configureRetryBehavior(maxRetries: Int) = install(plugin
 fun HttpClientConfig<*>.configureSerialization() = install(plugin = ContentNegotiation) {
     jackson {
         disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        registerModule(JavaTimeModule())
     }
 }
 

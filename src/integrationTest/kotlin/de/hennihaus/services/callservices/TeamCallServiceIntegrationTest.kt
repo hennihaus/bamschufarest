@@ -1,9 +1,9 @@
 package de.hennihaus.services.callservices
 
-import de.hennihaus.bamdatamodel.Bank
-import de.hennihaus.configurations.Configuration.BANK_UUID
+import de.hennihaus.bamdatamodel.Team
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getExampleTeam
 import de.hennihaus.plugins.initKoin
-import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Disabled
@@ -15,13 +15,12 @@ import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.koin.test.junit5.KoinTestExtension
-import java.util.UUID
 
 @Disabled(value = "until dev cluster is available")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class BankCallServiceIntegrationTest : KoinTest {
+class TeamCallServiceIntegrationTest : KoinTest {
 
-    private val classUnderTest: BankCallService by inject()
+    private val classUnderTest: TeamCallService by inject()
 
     @JvmField
     @RegisterExtension
@@ -34,16 +33,17 @@ class BankCallServiceIntegrationTest : KoinTest {
     fun cleanUp() = stopKoin()
 
     @Nested
-    inner class GetBankById {
+    inner class GetTeams {
         @Test
-        fun `should return a bank by id`() = runBlocking<Unit> {
-            val id = UUID.fromString(getKoin().getProperty(key = BANK_UUID))
+        fun `should return at least one team by username and password`() = runBlocking<Unit> {
+            val (_, _, username, password) = getExampleTeam()
 
-            val result: Bank = classUnderTest.getBankById(
-                id = id,
+            val result: List<Team> = classUnderTest.getTeams(
+                username = username,
+                password = password,
             )
 
-            result.shouldNotBeNull()
+            result.shouldNotBeEmpty()
         }
     }
 }

@@ -1,13 +1,17 @@
 package de.hennihaus.services.callservices
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import de.hennihaus.bamdatamodel.Bank
-import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.getSchufaBank
+import de.hennihaus.bamdatamodel.Team
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getFirstTeam
 import de.hennihaus.objectmothers.ConfigurationObjectMother.getConfigBackendConfiguration
-import de.hennihaus.services.callservices.paths.ConfigBackendPaths.BANKS_PATH
+import de.hennihaus.objectmothers.TeamPaginationObjectMother.getDefaultTeamPagination
+import de.hennihaus.services.callservices.paths.ConfigBackendPaths.PASSWORD_QUERY_PARAMETER
+import de.hennihaus.services.callservices.paths.ConfigBackendPaths.TEAMS_PATH
+import de.hennihaus.services.callservices.paths.ConfigBackendPaths.USERNAME_QUERY_PARAMETER
 import de.hennihaus.testutils.MockEngineBuilder.getMockEngine
+import de.hennihaus.testutils.bamObjectMapper
 import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.assertions.throwables.shouldThrowExactly
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.ClientRequestException
@@ -21,20 +25,20 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class BankCallServiceTest {
+class TeamCallServiceTest {
 
     private val config = getConfigBackendConfiguration()
-    private val defaultBankId = getSchufaBank().uuid
 
     private lateinit var engine: MockEngine
-    private lateinit var classUnderTest: BankCallService
+    private lateinit var classUnderTest: TeamCallService
 
     @Nested
-    inner class GetBankById {
+    inner class GetTeams {
         @Test
-        fun `should return a bank by id and build call correctly`() = runBlocking {
+        fun `should return teams and build call correctly`() = runBlocking {
+            val (_, _, username, password) = getFirstTeam()
             engine = getMockEngine(
-                content = jacksonObjectMapper().writeValueAsString(getSchufaBank()),
+                content = bamObjectMapper().writeValueAsString(getDefaultTeamPagination()),
                 assertions = {
                     it.method shouldBe HttpMethod.Get
                     it.url shouldBe Url(
@@ -47,40 +51,51 @@ class BankCallServiceTest {
                             append("/")
                             append(config.apiVersion)
                             append("/")
-                            append(BANKS_PATH)
-                            append("/")
-                            append(defaultBankId)
+                            append(TEAMS_PATH)
+                            append("?")
+                            append(USERNAME_QUERY_PARAMETER)
+                            append("=")
+                            append(username)
+                            append("&")
+                            append(PASSWORD_QUERY_PARAMETER)
+                            append("=")
+                            append(password)
                         },
                     )
                     it.headers[HttpHeaders.Accept] shouldBe "${ContentType.Application.Json}"
                 },
             )
-            classUnderTest = BankCallService(
-                defaultBankId = "$defaultBankId",
+            classUnderTest = TeamCallService(
                 engine = engine,
                 config = config,
             )
 
-            val result: Bank = classUnderTest.getBankById()
+            val result: List<Team> = classUnderTest.getTeams(
+                username = username,
+                password = password,
+            )
 
-            result shouldBe getSchufaBank()
+            result shouldContainExactly getDefaultTeamPagination().items
         }
 
         @Test
         fun `should throw an exception and request one time when bad request error occurs`() = runBlocking {
+            val (_, _, username, password) = getFirstTeam()
             var counter = 0
             engine = getMockEngine(
                 status = HttpStatusCode.BadRequest,
                 assertions = { counter++ },
             )
-            classUnderTest = BankCallService(
-                defaultBankId = "$defaultBankId",
+            classUnderTest = TeamCallService(
                 engine = engine,
                 config = config,
             )
 
             val result = shouldThrowExactly<ClientRequestException> {
-                classUnderTest.getBankById()
+                classUnderTest.getTeams(
+                    username = username,
+                    password = password,
+                )
             }
 
             result.response shouldHaveStatus HttpStatusCode.BadRequest
@@ -89,13 +104,13 @@ class BankCallServiceTest {
 
         @Test
         fun `should throw an exception and request three times when internal server error occurs`() = runBlocking {
+            val (_, _, username, password) = getFirstTeam()
             var counter = 0
             engine = getMockEngine(
                 status = HttpStatusCode.InternalServerError,
                 assertions = { counter++ },
             )
-            classUnderTest = BankCallService(
-                defaultBankId = "$defaultBankId",
+            classUnderTest = TeamCallService(
                 engine = engine,
                 config = config.copy(
                     maxRetries = 2,
@@ -103,7 +118,10 @@ class BankCallServiceTest {
             )
 
             val result = shouldThrowExactly<ServerResponseException> {
-                classUnderTest.getBankById()
+                classUnderTest.getTeams(
+                    username = username,
+                    password = password,
+                )
             }
 
             result.response shouldHaveStatus HttpStatusCode.InternalServerError

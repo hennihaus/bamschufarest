@@ -2,10 +2,11 @@ package de.hennihaus.services
 
 import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.getSchufaBank
 import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getFirstTeam
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getSecondTeam
 import de.hennihaus.objectmothers.ConfigurationObjectMother.getConfigBackendConfiguration
 import de.hennihaus.services.TrackingService.Companion.TEAM_NOT_FOUND_MESSAGE
-import de.hennihaus.services.callservices.BankCallService
 import de.hennihaus.services.callservices.StatisticCallService
+import de.hennihaus.services.callservices.TeamCallService
 import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.common.runBlocking
 import io.kotest.matchers.throwable.shouldHaveMessage
@@ -25,13 +26,7 @@ class TrackingServiceTest {
 
     private val config = getConfigBackendConfiguration()
 
-    private val bankCall = spyk(
-        objToCopy = BankCallService(
-            defaultBankId = "${getSchufaBank().uuid}",
-            engine = CIO.create(),
-            config = config,
-        ),
-    )
+    private val teamCall = mockk<TeamCallService>()
     private val statisticCall = spyk(
         objToCopy = StatisticCallService(
             defaultBankId = "${getSchufaBank().uuid}",
@@ -41,7 +36,7 @@ class TrackingServiceTest {
     )
 
     private val classUnderTest = TrackingService(
-        bankCall = bankCall,
+        teamCall = teamCall,
         statisticCall = statisticCall,
     )
 
@@ -51,9 +46,12 @@ class TrackingServiceTest {
     @Nested
     inner class TrackRequest {
         @Test
-        fun `should call increment statistic with teamId when username and password in bank teams`() = runBlocking {
-            val (teamId, username, password) = getFirstTeam()
-            coEvery { bankCall.getBankById() } returns getSchufaBank()
+        fun `should call increment statistic with teamId when username and password in teams response`() = runBlocking {
+            val (teamId, _, username, password) = getFirstTeam()
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(
+                getFirstTeam(),
+                getSecondTeam(),
+            )
             coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } returns mockk()
 
             classUnderTest.trackRequest(
@@ -62,15 +60,15 @@ class TrackingServiceTest {
             )
 
             coVerifySequence {
-                bankCall.getBankById()
+                teamCall.getTeams(username = username, password = password)
                 statisticCall.incrementStatistic(teamId = teamId)
             }
         }
 
         @Test
-        fun `should throw an exception and not increment statistic when bank has zero teams`() = runBlocking {
-            val (_, username, password) = getFirstTeam()
-            coEvery { bankCall.getBankById() } returns getSchufaBank(teams = emptyList())
+        fun `should throw an exception and not increment statistic when teams response is empty`() = runBlocking {
+            val (_, _, username, password) = getFirstTeam()
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns emptyList()
 
             val result = shouldThrowExactly<NotFoundException> {
                 classUnderTest.trackRequest(
@@ -80,7 +78,7 @@ class TrackingServiceTest {
             }
 
             result shouldHaveMessage TEAM_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { bankCall.getBankById() }
+            coVerify(exactly = 1) { teamCall.getTeams(username = username, password = password) }
             coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
@@ -88,7 +86,7 @@ class TrackingServiceTest {
         fun `should throw an exception and not increment statistic when username is unknown`() = runBlocking {
             val username = "unknown"
             val password = getFirstTeam().password
-            coEvery { bankCall.getBankById() } returns getSchufaBank()
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(getFirstTeam())
 
             val result = shouldThrowExactly<NotFoundException> {
                 classUnderTest.trackRequest(
@@ -98,7 +96,7 @@ class TrackingServiceTest {
             }
 
             result shouldHaveMessage TEAM_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { bankCall.getBankById() }
+            coVerify(exactly = 1) { teamCall.getTeams(username = username, password = password) }
             coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
@@ -106,7 +104,7 @@ class TrackingServiceTest {
         fun `should throw an exception and not increment statistic when password is unknown`() = runBlocking {
             val username = getFirstTeam().username
             val password = "unknown"
-            coEvery { bankCall.getBankById() } returns getSchufaBank()
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(getFirstTeam())
 
             val result = shouldThrowExactly<NotFoundException> {
                 classUnderTest.trackRequest(
@@ -116,14 +114,14 @@ class TrackingServiceTest {
             }
 
             result shouldHaveMessage TEAM_NOT_FOUND_MESSAGE
-            coVerify(exactly = 1) { bankCall.getBankById() }
+            coVerify(exactly = 1) { teamCall.getTeams(username = username, password = password) }
             coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
         @Test
-        fun `should throw an exception when error occurs while bank call`() = runBlocking {
-            val (_, username, password) = getFirstTeam()
-            coEvery { bankCall.getBankById() } throws Exception()
+        fun `should throw an exception when error occurs while teams call`() = runBlocking {
+            val (_, _, username, password) = getFirstTeam()
+            coEvery { teamCall.getTeams(username = any(), password = any()) } throws Exception()
 
             shouldThrowExactly<Exception> {
                 classUnderTest.trackRequest(
@@ -132,14 +130,14 @@ class TrackingServiceTest {
                 )
             }
 
-            coVerify(exactly = 1) { bankCall.getBankById() }
+            coVerify(exactly = 1) { teamCall.getTeams(username = username, password = password) }
             coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = any(), bankId = any()) }
         }
 
         @Test
         fun `should throw an exception when error occurs while statistic call`() = runBlocking {
-            val (teamId, username, password) = getFirstTeam()
-            coEvery { bankCall.getBankById() } returns getSchufaBank()
+            val (teamId, _, username, password) = getFirstTeam()
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(getFirstTeam())
             coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } throws Exception()
 
             shouldThrowExactly<Exception> {
@@ -150,7 +148,7 @@ class TrackingServiceTest {
             }
 
             coVerifySequence {
-                bankCall.getBankById()
+                teamCall.getTeams(username = username, password = password)
                 statisticCall.incrementStatistic(teamId = teamId)
             }
         }
