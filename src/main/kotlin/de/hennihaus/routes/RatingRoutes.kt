@@ -1,5 +1,6 @@
 package de.hennihaus.routes
 
+import de.hennihaus.routes.RatingRoutes.BAM_ORIGIN_HEADER
 import de.hennihaus.routes.RatingRoutes.DELAY_IN_MILLISECONDS_QUERY_PARAMETER
 import de.hennihaus.routes.RatingRoutes.PASSWORD_QUERY_PARAMETER
 import de.hennihaus.routes.RatingRoutes.RATING_LEVEL_QUERY_PARAMETER
@@ -22,6 +23,8 @@ object RatingRoutes {
     const val DELAY_IN_MILLISECONDS_QUERY_PARAMETER = "delayInMilliseconds"
     const val USERNAME_QUERY_PARAMETER = "username"
     const val PASSWORD_QUERY_PARAMETER = "password"
+
+    const val BAM_ORIGIN_HEADER = "X-BAM-Origin"
 }
 
 fun Route.registerRatingRoutes() {
@@ -37,6 +40,7 @@ private fun Route.getRating() = get(path = "/$RATING_PATH") {
         val delayInMilliseconds = request.queryParameters.getOrFail(name = DELAY_IN_MILLISECONDS_QUERY_PARAMETER)
         val username = request.queryParameters.getOrFail(name = USERNAME_QUERY_PARAMETER)
         val password = request.queryParameters.getOrFail(name = PASSWORD_QUERY_PARAMETER)
+        val origin = request.headers.get(name = BAM_ORIGIN_HEADER)
 
         val score = rating.calculateRating(
             ratingLevel = ratingLevel,
@@ -48,6 +52,7 @@ private fun Route.getRating() = get(path = "/$RATING_PATH") {
                 tracking.trackRequest(
                     username = username,
                     password = password,
+                    origin = origin,
                 )
             },
         )

@@ -1,6 +1,8 @@
 package de.hennihaus.services
 
+import de.hennihaus.bamdatamodel.TeamType
 import de.hennihaus.bamdatamodel.objectmothers.BankObjectMother.getSchufaBank
+import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getExampleTeam
 import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getFirstTeam
 import de.hennihaus.bamdatamodel.objectmothers.TeamObjectMother.getSecondTeam
 import de.hennihaus.objectmothers.ConfigurationObjectMother.getConfigBackendConfiguration
@@ -46,8 +48,8 @@ class TrackingServiceTest {
     @Nested
     inner class TrackRequest {
         @Test
-        fun `should call increment statistic with teamId when username and password in teams response`() = runBlocking {
-            val (teamId, _, username, password) = getFirstTeam()
+        fun `should increment statistic when regular team is available and origin not set`() = runBlocking {
+            val (teamId, _, username, password) = getFirstTeam(type = TeamType.REGULAR)
             coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(
                 getFirstTeam(),
                 getSecondTeam(),
@@ -57,12 +59,72 @@ class TrackingServiceTest {
             classUnderTest.trackRequest(
                 username = username,
                 password = password,
+                origin = null,
             )
 
             coVerifySequence {
                 teamCall.getTeams(username = username, password = password)
                 statisticCall.incrementStatistic(teamId = teamId)
             }
+        }
+
+        @Test
+        fun `should not increment statistic when regular team is available and origin is set`() = runBlocking {
+            val origin = "https://hennihaus.github.io"
+            val (teamId, _, username, password) = getFirstTeam(type = TeamType.REGULAR)
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(
+                getFirstTeam(),
+                getSecondTeam(),
+            )
+            coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } returns mockk()
+
+            classUnderTest.trackRequest(
+                username = username,
+                password = password,
+                origin = origin,
+            )
+
+            coVerify(exactly = 1) { teamCall.getTeams(username = username, password = password) }
+            coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = teamId) }
+        }
+
+        @Test
+        fun `should increment statistic when example team is available and origin is set`() = runBlocking {
+            val origin = "https://hennihaus.github.io"
+            val (teamId, _, username, password) = getExampleTeam(type = TeamType.EXAMPLE)
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(
+                getExampleTeam(),
+            )
+            coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } returns mockk()
+
+            classUnderTest.trackRequest(
+                username = username,
+                password = password,
+                origin = origin,
+            )
+
+            coVerifySequence {
+                teamCall.getTeams(username = username, password = password)
+                statisticCall.incrementStatistic(teamId = teamId)
+            }
+        }
+
+        @Test
+        fun `should not increment statistic when example team is available and origin is not set`() = runBlocking {
+            val (teamId, _, username, password) = getExampleTeam(type = TeamType.EXAMPLE)
+            coEvery { teamCall.getTeams(username = any(), password = any()) } returns listOf(
+                getExampleTeam(),
+            )
+            coEvery { statisticCall.incrementStatistic(teamId = any(), bankId = any()) } returns mockk()
+
+            classUnderTest.trackRequest(
+                username = username,
+                password = password,
+                origin = null,
+            )
+
+            coVerify(exactly = 1) { teamCall.getTeams(username = username, password = password) }
+            coVerify(exactly = 0) { statisticCall.incrementStatistic(teamId = teamId) }
         }
 
         @Test
@@ -74,6 +136,7 @@ class TrackingServiceTest {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
+                    origin = null,
                 )
             }
 
@@ -92,6 +155,7 @@ class TrackingServiceTest {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
+                    origin = null,
                 )
             }
 
@@ -110,6 +174,7 @@ class TrackingServiceTest {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
+                    origin = null,
                 )
             }
 
@@ -127,6 +192,7 @@ class TrackingServiceTest {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
+                    origin = null,
                 )
             }
 
@@ -144,6 +210,7 @@ class TrackingServiceTest {
                 classUnderTest.trackRequest(
                     username = username,
                     password = password,
+                    origin = null,
                 )
             }
 

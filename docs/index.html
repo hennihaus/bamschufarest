@@ -28,6 +28,11 @@
                         SwaggerUIStandalonePreset
                     ],
                     layout: "StandaloneLayout",
+                    requestInterceptor: (request) => {
+                        request.headers["X-BAM-Origin"] = `${window.location.protocol}${window.location.hostname}`;
+                        return request;
+                    },
+                    showMutatedRequest: false
                 }
             );
         };

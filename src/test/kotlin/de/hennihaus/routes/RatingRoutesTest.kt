@@ -10,6 +10,7 @@ import de.hennihaus.objectmothers.RatingObjectMother.getBestRating
 import de.hennihaus.objectmothers.RatingObjectMother.getMinValidRatingResource
 import de.hennihaus.objectmothers.ReasonObjectMother.DEFAULT_INVALID_REQUEST_MESSAGE
 import de.hennihaus.plugins.RequestValidationException
+import de.hennihaus.routes.RatingRoutes.BAM_ORIGIN_HEADER
 import de.hennihaus.services.RatingService
 import de.hennihaus.services.TrackingService
 import de.hennihaus.services.TrackingService.Companion.TEAM_NOT_FOUND_MESSAGE
@@ -20,6 +21,7 @@ import io.kotest.assertions.ktor.client.shouldHaveStatus
 import io.kotest.matchers.shouldBe
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.NotFoundException
 import io.mockk.clearAllMocks
@@ -61,7 +63,7 @@ class RatingRoutesTest {
         fun init() {
             // default behavior
             coEvery { ratingValidation.validateUrl(resource = any()) } returns Unit
-            coEvery { tracking.trackRequest(username = any(), password = any()) } returns Unit
+            coEvery { tracking.trackRequest(username = any(), password = any(), origin = any()) } returns Unit
             coEvery {
                 rating.calculateRating(
                     ratingLevel = any(),
@@ -79,6 +81,7 @@ class RatingRoutesTest {
                 username,
                 password,
             ) = getMinValidRatingResource()
+            val header = "https://hennihaus.github.io"
 
             val response = testClient.get(
                 urlString = """
@@ -90,7 +93,11 @@ class RatingRoutesTest {
                     &username=$username
                     &password=$password
                 """.trimIndent().replace(oldValue = "\n", newValue = ""),
-            )
+            ) {
+                headers {
+                    append(name = BAM_ORIGIN_HEADER, value = header)
+                }
+            }
 
             response shouldHaveStatus HttpStatusCode.OK
             response.body<Rating>() shouldBe getBestRating()
@@ -105,6 +112,7 @@ class RatingRoutesTest {
                 tracking.trackRequest(
                     username = username!!,
                     password = password!!,
+                    origin = header,
                 )
             }
         }
@@ -153,6 +161,7 @@ class RatingRoutesTest {
                 tracking.trackRequest(
                     username = any(),
                     password = any(),
+                    origin = any(),
                 )
             }
         }
@@ -190,7 +199,13 @@ class RatingRoutesTest {
                 username,
                 password,
             ) = getMinValidRatingResource()
-            coEvery { tracking.trackRequest(username = any(), password = any()) } throws NotFoundException(
+            coEvery {
+                tracking.trackRequest(
+                    username = any(),
+                    password = any(),
+                    origin = any(),
+                )
+            } throws NotFoundException(
                 message = TEAM_NOT_FOUND_MESSAGE,
             )
 
@@ -219,7 +234,13 @@ class RatingRoutesTest {
                 username,
                 password
             ) = getMinValidRatingResource()
-            coEvery { tracking.trackRequest(username = any(), password = any()) } throws IllegalStateException()
+            coEvery {
+                tracking.trackRequest(
+                    username = any(),
+                    password = any(),
+                    origin = any(),
+                )
+            } throws IllegalStateException()
 
             val response = testClient.get(
                 urlString = """
