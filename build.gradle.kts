@@ -65,7 +65,7 @@ dependencies {
     val mockkVersion: String by project
     val junitVersion: String by project
     val koinVersion: String by project
-    val koinLibariesVersion: String by project
+    val koinLibrariesVersion: String by project
     val koinAnnotationsVersion: String by project
     val konformVersion: String by project
     val bamdatamodelVersion: String by project
