@@ -1,4 +1,4 @@
-FROM gradle:7.5.1-jdk11 AS build
+FROM gradle:7.6.0-jdk11 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 ARG GITHUB_TOKEN

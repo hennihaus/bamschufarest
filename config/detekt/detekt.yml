@@ -9,6 +9,7 @@ build:
 config:
   validation: true
   warningsAsErrors: true
+  checkExhaustiveness: true
   # when writing own rules with new properties, exclude the property path e.g.: 'my_rule_set,.*>.*>[my_property]'
   excludes: ''
 
@@ -84,6 +85,7 @@ comments:
     searchInInnerClass: true
     searchInInnerObject: true
     searchInInnerInterface: true
+    searchInProtectedClass: true
   UndocumentedPublicFunction:
     active: false
     excludes: [
@@ -94,6 +96,7 @@ comments:
       '**/jsTest/**',
       '**/iosTest/**'
     ]
+    searchProtectedFunction: true
   UndocumentedPublicProperty:
     active: false
     excludes: [
@@ -104,9 +107,13 @@ comments:
       '**/jsTest/**',
       '**/iosTest/**'
     ]
+    searchProtectedProperty: true
 
 complexity:
   active: true
+  CognitiveComplexMethod:
+    active: true
+    threshold: 15
   ComplexCondition:
     active: true
     threshold: 4
@@ -115,7 +122,8 @@ complexity:
     threshold: 10
     includeStaticDeclarations: false
     includePrivateDeclarations: false
-  ComplexMethod:
+    ignoreOverloaded: false
+  CyclomaticComplexMethod:
     active: true
     threshold: 15
     ignoreSingleWhenExpression: false
@@ -473,6 +481,8 @@ performance:
       '**/jsTest/**',
       '**/iosTest/**'
     ]
+  UnnecessaryPartOfBinaryExpression:
+    active: true
   UnnecessaryTemporaryInstantiation:
     active: true
 
@@ -499,8 +509,6 @@ potential-bugs:
       - 'java.util.HashSet'
       - 'java.util.LinkedHashMap'
       - 'java.util.HashMap'
-  DuplicateCaseInWhenExpression:
-    active: true
   ElseCaseInsteadOfExhaustiveWhen:
     active: true
   EqualsAlwaysReturnsTrueOrFalse:
@@ -515,13 +523,17 @@ potential-bugs:
     active: true
   IgnoredReturnValue:
     active: true
-    restrictToAnnotatedMethods: true
+    restrictToConfig: true
     returnValueAnnotations:
       - '*.CheckResult'
       - '*.CheckReturnValue'
     ignoreReturnValueAnnotations:
       - '*.CanIgnoreReturnValue'
-    ignoreFunctionCall: [ ]
+    returnValueTypes:
+      - 'kotlin.sequences.Sequence'
+      - 'kotlinx.coroutines.flow.*Flow'
+      - 'java.util.stream.*Stream'
+    ignoreFunctionCall: []
   ImplicitDefaultLocale:
     active: true
   ImplicitUnitReturnType:
@@ -549,16 +561,13 @@ potential-bugs:
   MissingPackageDeclaration:
     active: true
     excludes: [ '**/*.kts' ]
-  MissingWhenCase:
-    active: true
-    allowElseExpression: true
   NullCheckOnMutableProperty:
     active: true
   NullableToStringCall:
     active: true
-  RedundantElseInWhen:
-    active: true
   UnconditionalJumpStatementInLoop:
+    active: true
+  UnnecessaryNotNullCheck:
     active: true
   UnnecessaryNotNullOperator:
     active: true
@@ -589,6 +598,8 @@ potential-bugs:
 
 style:
   active: true
+  AlsoCouldBeApply:
+    active: true
   CanBeNonNullable:
     active: true
   CascadingCallWrapping:
@@ -600,7 +611,8 @@ style:
     active: true
   DataClassContainsFunctions:
     active: true
-    conversionFunctionPrefix: 'to'
+    conversionFunctionPrefix:
+      - 'to'
   DataClassShouldBeImmutable:
     active: true
   DestructuringDeclarationWithTooManyEntries:
@@ -632,14 +644,10 @@ style:
   ForbiddenMethodCall:
     active: true
     methods:
-      - 'kotlin.io.print'
-      - 'kotlin.io.println'
-  ForbiddenPublicDataClass:
-    active: true
-    excludes: [ '**' ]
-    ignorePackages:
-      - '*.internal'
-      - '*.internal.*'
+      - reason: 'print does not allow you to configure the output stream. Use a logger instead.'
+        value: 'kotlin.io.print'
+      - reason: 'println does not allow you to configure the output stream. Use a logger instead.'
+        value: 'kotlin.io.println'
   ForbiddenSuppress:
     active: false
     rules: []
@@ -651,13 +659,7 @@ style:
     active: true
     ignoreOverridableFunction: true
     ignoreActualFunction: true
-    excludedFunctions: ''
-  LibraryCodeMustSpecifyReturnType:
-    active: true
-    excludes: [ '**' ]
-  LibraryEntitiesShouldNotBePublic:
-    active: true
-    excludes: [ '**' ]
+    excludedFunctions: []
   LoopWithTooManyJumpStatements:
     active: true
     maxJumpCount: 1
@@ -699,12 +701,16 @@ style:
     excludePackageStatements: false
     excludeImportStatements: true
     excludeCommentStatements: false
+    excludeRawStrings: false
   MayBeConst:
     active: true
   ModifierOrder:
     active: true
   MultilineLambdaItParameter:
     active: true
+  MultilineRawStringIndentation:
+    active: true
+    indentSize: 4
   NestedClassesVisibility:
     active: true
   NewLineAtEndOfFile:
@@ -712,7 +718,7 @@ style:
   NoTabs:
     active: true
   NullableBooleanCheck:
-    active: false
+    active: true
   ObjectLiteralToLambda:
     active: true
   OptionalAbstractKeyword:
@@ -734,7 +740,8 @@ style:
   ReturnCount:
     active: true
     max: 2
-    excludedFunctions: 'equals'
+    excludedFunctions:
+      - 'equals'
     excludeLabeled: false
     excludeReturnFromLambda: true
     excludeGuardClauses: false
@@ -749,6 +756,8 @@ style:
     max: 2
     excludeGuardClauses: false
   TrailingWhitespace:
+    active: true
+  TrimMultilineRawString:
     active: true
   UnderscoresInNumericLiterals:
     active: true
@@ -772,6 +781,7 @@ style:
     active: true
   UnnecessaryParentheses:
     active: true
+    allowForUnclearPrecedence: false
   UntilInsteadOfRangeTo:
     active: true
   UnusedImports:
@@ -806,6 +816,8 @@ style:
     active: true
   UseRequireNotNull:
     active: true
+  UseSumOfInsteadOfFlatMapSize:
+    active: false
   UselessCallOnNotNull:
     active: true
   UtilityClassWithPublicConstructor:
