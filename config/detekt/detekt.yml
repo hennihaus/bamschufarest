@@ -167,7 +167,7 @@ complexity:
     active: true
     threshold: 4
   NestedScopeFunctions:
-    active: false
+    active: true
     threshold: 1
     functions:
       - 'kotlin.apply'
@@ -459,7 +459,7 @@ performance:
   ArrayPrimitive:
     active: true
   CouldBeSequence:
-    active: false
+    active: true
     threshold: 3
   ForEachOnRange:
     active: true
@@ -603,7 +603,7 @@ style:
   CanBeNonNullable:
     active: true
   CascadingCallWrapping:
-    active: false
+    active: true
     includeElvis: true
   ClassOrdering:
     active: true
@@ -649,7 +649,7 @@ style:
       - reason: 'println does not allow you to configure the output stream. Use a logger instead.'
         value: 'kotlin.io.println'
   ForbiddenSuppress:
-    active: false
+    active: true
     rules: []
   ForbiddenVoid:
     active: true
@@ -693,7 +693,7 @@ style:
   MandatoryBracesLoops:
     active: true
   MaxChainedCallsOnSameLine:
-    active: false
+    active: true
     maxChainedCalls: 5
   MaxLineLength:
     active: true
@@ -770,7 +770,7 @@ style:
   UnnecessaryApply:
     active: true
   UnnecessaryBackticks:
-    active: false
+    active: true
   UnnecessaryFilter:
     active: true
   UnnecessaryInheritance:

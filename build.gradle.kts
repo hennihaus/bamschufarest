@@ -92,9 +92,9 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
 
     // koin plugins
-    implementation("io.insert-koin:koin-ktor:$koinLibariesVersion")
+    implementation("io.insert-koin:koin-ktor:$koinLibrariesVersion")
     compileOnly("io.insert-koin:koin-annotations:$koinAnnotationsVersion")
-    implementation("io.insert-koin:koin-logger-slf4j:$koinLibariesVersion")
+    implementation("io.insert-koin:koin-logger-slf4j:$koinLibrariesVersion")
     ksp("io.insert-koin:koin-ksp-compiler:$koinAnnotationsVersion")
     testImplementation("io.insert-koin:koin-test:$koinVersion")
     testImplementation("io.insert-koin:koin-test-junit5:$koinVersion")
