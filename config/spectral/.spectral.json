@@ -1,0 +1,74 @@
+{
+  "extends": [
+    [
+      "spectral:oas",
+      "all"
+    ]
+  ],
+  "formats": [
+    "oas3"
+  ],
+  "rules": {
+    "contact-properties": {
+      "description": "Contact object must have 'name', 'url' and 'email'.",
+      "recommended": false,
+      "given": "$.info.contact",
+      "then": [
+        {
+          "field": "name",
+          "function": "truthy"
+        },
+        {
+          "field": "email",
+          "function": "truthy"
+        }
+      ]
+    },
+    "duplicated-entry-in-enum": "error",
+    "info-contact": "error",
+    "info-description": "error",
+    "info-license": "error",
+    "license-url": "error",
+    "no-$ref-siblings": "error",
+    "no-eval-in-markdown": "error",
+    "no-script-tags-in-markdown": "error",
+    "openapi-tags": "error",
+    "openapi-tags-alphabetical": "error",
+    "openapi-tags-uniqueness": "error",
+    "operation-description": "off",
+    "operation-operationId": "error",
+    "operation-operationId-unique": "error",
+    "operation-operationId-valid-in-url": "error",
+    "operation-parameters": "error",
+    "operation-singular-tag": "error",
+    "operation-success-response": "error",
+    "operation-tags": "error",
+    "operation-tag-defined": "error",
+    "path-declarations-must-exist": "error",
+    "path-keys-no-trailing-slash": "error",
+    "path-not-include-query": "error",
+    "path-params": "error",
+    "tag-description": "off",
+    "typed-enum": "error",
+    "oas3-api-servers": "error",
+    "oas3-examples-value-or-externalValue": "error",
+    "oas3-operation-security-defined": "error",
+    "oas3-parameter-description": "error",
+    "oas3-schema": "error",
+    "oas3-server-not-example.com": "error",
+    "oas3-server-trailing-slash": "error",
+    "oas3-unused-component": "error",
+    "oas3-valid-media-example": "error",
+    "oas3-valid-schema-example": "error"
+  },
+  "overrides": [
+    {
+      "files": [
+        "rating.json#/components/parameters/delayInMilliseconds/example"
+      ],
+      "rules": {
+        "oas3-valid-media-example": "off"
+      }
+    }
+  ]
+}
