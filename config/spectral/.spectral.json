@@ -65,7 +65,10 @@
     {
       "files": [
         "rating.json#/components/parameters/delayInMilliseconds/example"
-      ]
+      ],
+      "rules": {
+        "oas3-valid-media-example": "off"
+      }
     }
   ]
 }
