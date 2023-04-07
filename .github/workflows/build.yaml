@@ -7,6 +7,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
     steps:
       - uses: actions/checkout@v3
 
@@ -16,6 +18,12 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
           cache: 'gradle'
+
+      - name: Lint API
+        uses: stoplightio/spectral-action@v0.8.10
+        with:
+          file_glob: 'docs/rating.json'
+          spectral_ruleset: 'config/spectral/.spectral.json'
 
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
