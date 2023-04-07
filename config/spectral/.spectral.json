@@ -60,5 +60,12 @@
     "oas3-unused-component": "error",
     "oas3-valid-media-example": "error",
     "oas3-valid-schema-example": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "rating.json#/components/parameters/delayInMilliseconds/example"
+      ]
+    }
+  ]
 }
