@@ -6,7 +6,7 @@
       "name": "Jan-Hendrik Hausner",
       "email": "jan-hendrik.hausner@outlook.com"
     },
-    "description": "<p>Die Schufa ist ein WebService, welcher eine virtuelle Schufa darstellt. Dieser Service ist als REST-Service erreichbar. Die Eingabeparameter entnehmen Sie der Parameterliste. Als Antwort liefert der WebService anschließend ein zufälliges Rating in Form des Schufa Score-Wertes (rating, als int zwischen 0 und 9.999,) und eine Ausfallwahrscheinlichkeit &nbsp;( “failureRiskInPercent” als double) . Um die Anwendung trotz Zufallswerte entsprechend testen zu können, muss auch übergeben werden, welche Ratingstufe (A bis P) gewünscht ist.</p><p>&nbsp;</p><p>&nbsp;</p><p>hththf</p>",
+    "description": "<p>Die Schufa ist ein WebService, welcher eine virtuelle Schufa darstellt. Dieser Service ist als REST-Service erreichbar. Die Eingabeparameter entnehmen Sie der Parameterliste. Als Antwort liefert der WebService anschließend ein zufälliges Rating in Form des Schufa Score-Wertes (rating, als int zwischen 0 und 9.999,) und eine Ausfallwahrscheinlichkeit &nbsp;( “failureRiskInPercent” als double) . Um die Anwendung trotz Zufallswerte entsprechend testen zu können, muss auch übergeben werden, welche Ratingstufe (A bis P) gewünscht ist.</p>",
     "license": {
       "name": "Apache 2.0",
       "url": "https://github.com/hennihaus/bamschufarest/blob/master/LICENSE"
