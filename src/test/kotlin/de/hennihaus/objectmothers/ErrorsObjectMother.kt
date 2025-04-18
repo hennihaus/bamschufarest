@@ -8,6 +8,7 @@ import de.hennihaus.objectmothers.ReasonObjectMother.getMissingParameterReason
 import de.hennihaus.objectmothers.ReasonObjectMother.getTeamNotFoundReason
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 
 object ErrorsObjectMother {
 
@@ -16,7 +17,7 @@ object ErrorsObjectMother {
         dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime,
+        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
     )
 
     fun getMissingParameterErrors(
@@ -24,7 +25,7 @@ object ErrorsObjectMother {
         dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime,
+        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
     )
 
     fun getNotFoundErrors(
@@ -32,7 +33,7 @@ object ErrorsObjectMother {
         dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime,
+        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
     )
 
     fun getInternalServerErrors(
@@ -40,7 +41,7 @@ object ErrorsObjectMother {
         dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime,
+        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
     )
 
     private fun getInvalidRequestReasons() = listOf(
