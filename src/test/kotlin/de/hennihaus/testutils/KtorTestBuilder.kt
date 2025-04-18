@@ -10,7 +10,8 @@ import io.ktor.serialization.jackson.jackson
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.testing.ApplicationTestBuilder
 import org.koin.core.module.Module
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import io.ktor.server.testing.testApplication as ktorTestApplication
 
 object KtorTestBuilder {
@@ -28,7 +29,7 @@ object KtorTestBuilder {
                     koinModules = mockModules,
                 )
             }
-            withConstantNow(now = LocalDateTime.now()) {
+            withConstantNow(now = OffsetDateTime.now(ZoneOffset.UTC)) {
                 block()
             }
         }
