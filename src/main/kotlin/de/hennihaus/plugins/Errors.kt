@@ -10,12 +10,12 @@ import io.ktor.server.plugins.MissingRequestParameterException
 import io.ktor.server.plugins.NotFoundException
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 fun Application.configureErrorHandling() = install(plugin = StatusPages) {
     exception<Throwable> { call, throwable ->
-        val dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)
+        val dateTime = OffsetDateTime.now(ZoneOffset.UTC)
 
         when (throwable) {
             is RequestValidationException -> call.respond(
@@ -39,7 +39,7 @@ fun Application.configureErrorHandling() = install(plugin = StatusPages) {
     }
 }
 
-private fun Throwable.toErrors(dateTime: LocalDateTime) = Errors(
+private fun Throwable.toErrors(dateTime: OffsetDateTime) = Errors(
     reasons = listOf(
         Reason(
             exception = this::class.simpleName ?: ANONYMOUS_OBJECT,
@@ -49,7 +49,7 @@ private fun Throwable.toErrors(dateTime: LocalDateTime) = Errors(
     dateTime = dateTime,
 )
 
-private fun RequestValidationException.toErrors(dateTime: LocalDateTime) = Errors(
+private fun RequestValidationException.toErrors(dateTime: OffsetDateTime) = Errors(
     reasons = this.reasons.map { reason ->
         Reason(
             exception = this::class.simpleName ?: ANONYMOUS_OBJECT,

@@ -6,41 +6,41 @@ import de.hennihaus.objectmothers.ReasonObjectMother.getInternalServerErrorReaso
 import de.hennihaus.objectmothers.ReasonObjectMother.getInvalidPasswordReason
 import de.hennihaus.objectmothers.ReasonObjectMother.getMissingParameterReason
 import de.hennihaus.objectmothers.ReasonObjectMother.getTeamNotFoundReason
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 object ErrorsObjectMother {
 
     fun getInvalidRequestErrors(
         reasons: List<Reason> = getInvalidRequestReasons(),
-        dateTime: LocalDateTime = LocalDateTime.now(),
+        dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
+        dateTime = dateTime,
     )
 
     fun getMissingParameterErrors(
         reasons: List<Reason> = getMissingParameterReasons(),
-        dateTime: LocalDateTime = LocalDateTime.now(),
+        dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
+        dateTime = dateTime,
     )
 
     fun getNotFoundErrors(
         reasons: List<Reason> = getNotFoundReasons(),
-        dateTime: LocalDateTime = LocalDateTime.now(),
+        dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
+        dateTime = dateTime,
     )
 
     fun getInternalServerErrors(
         reasons: List<Reason> = getInternalServerErrorReasons(),
-        dateTime: LocalDateTime = LocalDateTime.now(),
+        dateTime: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC),
     ) = Errors(
         reasons = reasons,
-        dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS),
+        dateTime = dateTime,
     )
 
     private fun getInvalidRequestReasons() = listOf(

@@ -8,6 +8,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,12 +30,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.40.0
+        uses: anothrNick/github-tag-action@1.71.0
         id: tag-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: minor
           RELEASE_BRANCHES: master
+          GIT_API_TAGGING: false
 
       - name: Docker Login
         uses: docker/login-action@v2.1.0

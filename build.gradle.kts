@@ -124,8 +124,8 @@ val generateRatingModel by tasks.registering(GenerateTask::class) {
     globalProperties.set(mapOf("models" to "Errors,Reason,Rating", "modelDocs" to "false", "apis" to "false"))
     modelPackage.set("de.hennihaus.models.generated")
     skipValidateSpec.set(false)
-    typeMappings.set(mapOf("string+date-time" to "LocalDateTime"))
-    importMappings.set(mapOf("LocalDateTime" to "java.time.LocalDateTime"))
+    typeMappings.set(mapOf("string+date-time" to "OffsetDateTime"))
+    importMappings.set(mapOf("OffsetDateTime" to "java.time.OffsetDateTime"))
 }
 
 ktlint {
