@@ -12,10 +12,11 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 
 fun Application.configureErrorHandling() = install(plugin = StatusPages) {
     exception<Throwable> { call, throwable ->
-        val dateTime = OffsetDateTime.now(ZoneOffset.UTC)
+        val dateTime = OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)
 
         when (throwable) {
             is RequestValidationException -> call.respond(
