@@ -6,7 +6,7 @@
       "name": "Jan-Hendrik Hausner",
       "email": "jan-hendrik.hausner@outlook.com"
     },
-    "description": "<p>Schufa-Auskunft-Beschreibung (\"1. Integrationsschritt\")</p>",
+    "description": "Schufa-Auskunft-Beschreibung (\"1. Integrationsschritt\")\n",
     "license": {
       "name": "Apache 2.0",
       "url": "https://github.com/hennihaus/bamschufarest/blob/master/LICENSE"
